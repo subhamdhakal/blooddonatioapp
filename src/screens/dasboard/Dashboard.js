@@ -14,27 +14,24 @@ import {
   heightPercentageToDP as h,
 } from 'react-native-responsive-screen';
 import {ProfilePic} from '../../components';
+import {SliderBox} from 'react-native-image-slider-box';
 
 export class Dashboard extends Component {
+  state = {
+    images: [
+      'https://source.unsplash.com/1024x768/?nature',
+      'https://source.unsplash.com/1024x768/?water',
+      'https://source.unsplash.com/1024x768/?girl',
+      'https://source.unsplash.com/1024x768/?tree', // Network image
+    ],
+  };
   render() {
     return (
       <ImageBackground
         style={styles.Container}
         source={require('../../assets/dash.png')}>
-        {/* top */}
         <View style={styles.logo}>
-          <Text style={styles.btxt}>BLOOD BANK</Text>
-
-          <ProfilePic
-            onPress={() => {
-              console.warn('IMAGE UPLOADED');
-            }}
-          />
-          <View style={{flexDirection: 'row', marginTop: h('1%')}}>
-            <Text style={styles.wtxt}>Welcome! </Text>
-            {/* name here  */}
-            <Text style={styles.nametxt}>Umer</Text>
-          </View>
+          <SliderBox autoplay circleLoop images={this.state.images} />
         </View>
         <View style={styles.topview}>
           <View style={styles.Donar}>

@@ -11,6 +11,11 @@ import {
   TouchableOpacity,
   ScrollView,
 } from 'react-native';
+import moment from 'moment';
+import {Picker} from '@react-native-picker/picker';
+import DropDownPicker from 'react-native-dropdown-picker';
+import AnimatedLoader from 'react-native-animated-loader';
+
 import {
   widthPercentageToDP as w,
   heightPercentageToDP as h,
@@ -19,8 +24,14 @@ import {KeyboardAwareScrollView} from '@codler/react-native-keyboard-aware-scrol
 import {AppButton, NavHeader, AppTextinput} from '../../components';
 var validator = require('email-validator');
 import AsyncStorage from '@react-native-community/async-storage';
+import {bindActionCreators} from 'redux';
+import {connect} from 'react-redux';
+import DateTimePicker from '@react-native-community/datetimepicker';
+import {signup} from './../../actions/signup';
+import RNModalPicker from './../../components/RNModalPicker';
+import {DISTRICT_LIST} from './../../constants/app-constants';
 
-export class Signup extends Component {
+class Signup extends Component {
   state = {
     name: '',
     email: '',
@@ -29,7 +40,46 @@ export class Signup extends Component {
     confirmpassword: '',
     gender: '',
     blood: '',
+    showDatePicker: false,
+    dateofbirth: '',
+    disease: '',
+    district: '',
+    location: '',
+    role: '',
+    loading: false,
   };
+  constructor(props) {
+    super(props);
+
+    const person = {
+      id: '',
+      name: '',
+    };
+    var list = [];
+
+    var count = 1;
+    console.log(DISTRICT_LIST.length);
+    DISTRICT_LIST.forEach(function (entry) {
+      console.log(entry);
+      const me = Object.create(person);
+      me.id = count;
+      me.name = entry;
+      list.push(me);
+      count = count + 1;
+    });
+    console.log(JSON.stringify(list));
+    this.state = {
+      districtlist: list,
+    };
+  }
+
+  componentDidMount() {}
+
+  toggleLogin(value) {
+    this.setState({
+      loading: value,
+    });
+  }
 
   validate = () => {
     const {
@@ -40,6 +90,8 @@ export class Signup extends Component {
       confirmpassword,
       gender,
       blood,
+      dateofbirth,
+      district,
     } = this.state;
     const check = validator.validate(this.state.email);
     if (check === true) {
@@ -51,22 +103,43 @@ export class Signup extends Component {
                 if (password === confirmpassword) {
                   if (gender !== '') {
                     if (blood !== '') {
-                      const value = {
-                        name: this.state.name,
-                        email: this.state.email,
-                        phone: this.state.phone,
-                        password: this.state.password,
-                        confirmpassword: this.state.confirmpassword,
-                        gender: this.state.gender,
-                        blood: this.state.blood,
-                      };
-                      AsyncStorage.setItem(
-                        'userdata',
-                        JSON.stringify(value),
-                        () => {
-                          this.props.navigation.navigate('Signin');
-                        },
-                      );
+                      if (dateofbirth != '') {
+                        if (district != '') {
+                          const value = {
+                            name: this.state.name,
+                            email: this.state.email,
+                            mobile: this.state.phone,
+                            password: this.state.password,
+                            password_confirmation: this.state.confirmpassword,
+                            sex: this.state.gender,
+                            role_id: this.state.role,
+                            blood_group: this.state.blood,
+                            disease: this.state.disease,
+                            district: this.state.district,
+                            location: this.state.location,
+                            date_of_birth: this.state.dateofbirth,
+                          };
+                          this.toggleLogin(true);
+
+                          this.props.actions.signup({
+                            signUpDetails: value,
+
+                            onSuccess: () => {
+                              this.toggleLogin(false);
+                              this.props.navigation.replace('BottomTab');
+                            },
+                            onFailure: () => {
+                              this.toggleLogin(false);
+
+                              //Alert error message
+                            },
+                          });
+                        } else {
+                          alert('District is required');
+                        }
+                      } else {
+                        alert('Date of birth is required');
+                      }
                     } else {
                       alert('Blood Type is Required');
                     }
@@ -92,11 +165,36 @@ export class Signup extends Component {
         alert('password is Required');
       }
     } else {
-      alert("email is incorect")
+      alert('email is incorect');
     }
   };
+  onDateChanged = (event, selectedDate) => {
+    this.setState({
+      selectedDate: selectedDate,
+    });
+  };
+  setDate = (event, date) => {
+    if (date !== undefined) {
+      // timeSetAction
+      console.log(date);
+      this.setState({
+        dateofbirth: moment(date).format('YYYY-MM-DD').toString(),
+        showDatePicker: false,
+      });
+    }
+  };
+  showDatepicker = () => {
+    this.setState({
+      showDatePicker: true,
+    });
+  };
+  _selectedValueMaterial(index, item) {
+    this.setState({district: item.name});
+  }
 
   render() {
+    const date = new Date();
+
     return (
       <View style={styles.Container}>
         <NavHeader
@@ -104,10 +202,14 @@ export class Signup extends Component {
           onPress={() => this.props.navigation.goBack()}
         />
         {/* top */}
+        <AnimatedLoader
+          visible={this.state.loading}
+          overlayColor="rgba(255,255,255,0.75)"
+          source={require('../../assets/loader.json')}
+          animationStyle={styles.lottie}
+          speed={1}></AnimatedLoader>
         <KeyboardAwareScrollView>
           <View style={styles.topContainer}>
-            <Text style={styles.gtxt}>Details</Text>
-
             <View style={styles.txtinputContainer}>
               <AppTextinput
                 name={'Name'}
@@ -121,6 +223,40 @@ export class Signup extends Component {
                 name={'Phone'}
                 onChangeText={(phone) => this.setState({phone})}
               />
+              <TouchableOpacity
+                onPress={() =>
+                  this.setState({
+                    showDatePicker: true,
+                  })
+                }>
+                <AppTextinput
+                  name={'Date Of Birth'}
+                  onChangeText={(dateofbirth) => this.setState({dateofbirth})}
+                  editable={false}
+                  defaultValue={this.state.dateofbirth}
+                />
+                <View>
+                  {this.state.showDatePicker && (
+                    <DateTimePicker
+                      testID="datePicker"
+                      value={date}
+                      mode={'date'}
+                      is24Hour={false}
+                      display="spinner"
+                      onChange={this.setDate}
+                      // onChange={this.setState({
+                      //   selectedDate:,
+                      // })}
+                    />
+                  )}
+                </View>
+              </TouchableOpacity>
+
+              <AppTextinput
+                name={'Disease'}
+                onChangeText={(disease) => this.setState({disease})}
+              />
+
               <AppTextinput
                 name={'Password'}
                 onChangeText={(password) => this.setState({password})}
@@ -131,8 +267,109 @@ export class Signup extends Component {
                   this.setState({confirmpassword})
                 }
               />
+              <View style={{margin: 12}}>
+                <RNModalPicker
+                  dataSource={this.state.districtlist}
+                  dummyDataSource={this.state.districtlist}
+                  pickerTitle={'Select District'}
+                  showSearchBar={true}
+                  disablePicker={false}
+                  changeAnimation={'fade'}
+                  searchBarPlaceHolder={'Search'}
+                  showPickerTitle={true}
+                  placeHolderLabel={'Select District'}
+                  selectedLabel={this.state.district}
+                  dropDownImage={require('../../assets/icons/ic_drop_down.png')}
+                  selectedValue={(index, item) =>
+                    this._selectedValueMaterial(index, item)
+                  }
+                />
+              </View>
             </View>
           </View>
+          <View style={styles.midContainer}>
+            <Text style={styles.gtxt}>Role</Text>
+            <View style={styles.imgContainer}>
+              <TouchableOpacity
+                onPress={() => {
+                  const r = '2';
+                  this.setState({role: r});
+                }}
+                style={styles.img2}>
+                {this.state.role === '2' ? (
+                  <Image
+                    style={styles.imgs}
+                    source={require('../../assets/men2.png')}
+                  />
+                ) : (
+                  <Image
+                    style={styles.imgs}
+                    source={require('../../assets/men.png')}
+                  />
+                )}
+                <Text
+                  style={[
+                    styles.txtm,
+                    ,
+                    {
+                      color: this.state.role === '2' ? '#ea5455' : '#000',
+                    },
+                  ]}>
+                  Donor
+                </Text>
+              </TouchableOpacity>
+              <TouchableOpacity
+                onPress={() => this.setState({role: '3'})}
+                style={styles.img2}>
+                {this.state.gender === '3' ? (
+                  <Image
+                    style={styles.imgs}
+                    source={require('../../assets/women2.png')}
+                  />
+                ) : (
+                  <Image
+                    style={styles.imgs}
+                    source={require('../../assets/woman.png')}
+                  />
+                )}
+                <Text
+                  style={[
+                    styles.txtf,
+                    {
+                      color: this.state.role === '3' ? '#ff7171' : '#000',
+                    },
+                  ]}>
+                  Receiver
+                </Text>
+              </TouchableOpacity>
+
+              <TouchableOpacity
+                onPress={() => this.setState({role: '4'})}
+                style={styles.img2}>
+                {this.state.gender === '4' ? (
+                  <Image
+                    style={styles.imgs}
+                    source={require('../../assets/women2.png')}
+                  />
+                ) : (
+                  <Image
+                    style={styles.imgs}
+                    source={require('../../assets/woman.png')}
+                  />
+                )}
+                <Text
+                  style={[
+                    styles.txtf,
+                    {
+                      color: this.state.role === '4' ? '#ff7171' : '#000',
+                    },
+                  ]}>
+                  Donor/Receiver
+                </Text>
+              </TouchableOpacity>
+            </View>
+          </View>
+
           <View style={styles.midContainer}>
             <Text style={styles.gtxt}>Gender</Text>
             <View style={styles.imgContainer}>
@@ -161,7 +398,7 @@ export class Signup extends Component {
                       color: this.state.gender === 'male' ? '#ea5455' : '#000',
                     },
                   ]}>
-                  MALE
+                  Male
                 </Text>
               </TouchableOpacity>
               <TouchableOpacity
@@ -186,7 +423,7 @@ export class Signup extends Component {
                         this.state.gender === 'Female' ? '#ff7171' : '#000',
                     },
                   ]}>
-                  FEMALE
+                  Female
                 </Text>
               </TouchableOpacity>
             </View>
@@ -391,25 +628,22 @@ export class Signup extends Component {
                   justifyContent: 'center',
                   alignItems: 'center',
                 }}>
-                <Text style={{fontSize: h('2%'), color: 'black'}}>
-                  Already a memeber ?
-                </Text>
+                <Text style={{color: 'black'}}>Already a member ?</Text>
               </View>
               <TouchableOpacity
+                onPress={() => this.props.navigation.replace('Signin')}
                 style={{
                   // backgroundColor: 'green',
-                  width: '10%',
+                  width: '15%',
                   height: h('5%'),
                   justifyContent: 'center',
                   alignItems: 'center',
                 }}>
                 <Text
                   style={{
-                    fontSize: h('2%'),
-                    fontWeight: 'bold',
                     color: '#ff7171',
                   }}>
-                  Signin
+                  Sign In
                 </Text>
               </TouchableOpacity>
             </View>
@@ -419,6 +653,22 @@ export class Signup extends Component {
     );
   }
 }
+const mapStateToProps = (state) => {
+  return {};
+};
+
+function mapDispatchToProps(dispatch) {
+  return {
+    actions: bindActionCreators(
+      {
+        signup,
+      },
+      dispatch,
+    ),
+  };
+}
+
+export default connect(null, mapDispatchToProps)(Signup);
 const styles = StyleSheet.create({
   Container: {
     flex: 1,
@@ -427,7 +677,7 @@ const styles = StyleSheet.create({
   topContainer: {
     // backgroundColor: 'red',
     width: '100%',
-    height: h('50%'),
+    height: h('80%'),
   },
   midContainer: {
     // backgroundColor: 'yellow',
@@ -441,14 +691,15 @@ const styles = StyleSheet.create({
   },
   gtxt: {
     fontSize: h('2.5%'),
-    fontWeight: 'bold',
     color: 'black',
     marginLeft: h('7%'),
     marginTop: h('1%'),
+    fontFamily: 'HelveticaNowDisplay-Bold',
   },
   txtinputContainer: {
     alignItems: 'center',
     justifyContent: 'center',
+    margin: 16,
   },
   imgContainer: {
     flexDirection: 'row',
@@ -465,8 +716,17 @@ const styles = StyleSheet.create({
     borderRightColor: 'rgba(0,0,0,0.2)',
     borderRightWidth: h('0.1%'),
   },
+  imgr: {
+    width: '30%',
+    height: '100%',
+    // backgroundColor: 'green',
+    alignItems: 'center',
+    justifyContent: 'center',
+    borderRightColor: 'rgba(0,0,0,0.2)',
+    borderRightWidth: h('0.1%'),
+  },
   img2: {
-    width: '50%',
+    width: '30%',
     height: '100%',
     // backgroundColor: 'green',
     alignItems: 'center',
@@ -482,11 +742,12 @@ const styles = StyleSheet.create({
   txtf: {
     fontSize: h('2%'),
     marginTop: h('1.5%'),
+    fontFamily: 'HelveticaNowDisplay-Regular',
   },
   txtm: {
     color: '#000',
-    fontSize: h('2%'),
     marginTop: h('1.5%'),
+    fontFamily: 'HelveticaNowDisplay-Regular',
   },
   BotomContainerView: {
     width: '100%',
@@ -509,6 +770,8 @@ const styles = StyleSheet.create({
   },
   txta: {
     fontSize: h('2%'),
+    fontFamily: 'HelveticaNowDisplay-Regular',
+
     // color: this.state.blood !== '' ? 'white' : 'black',
   },
   BottomContainerView: {

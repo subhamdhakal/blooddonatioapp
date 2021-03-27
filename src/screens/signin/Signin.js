@@ -15,29 +15,43 @@ import {
 import {KeyboardAwareScrollView} from '@codler/react-native-keyboard-aware-scroll-view';
 import {AppButton, NavHeader, AppTextinput} from '../../components';
 import AsyncStorage from '@react-native-community/async-storage';
+import {login} from './../../actions/login';
+import {bindActionCreators} from 'redux';
+import {connect} from 'react-redux';
+import AnimatedLoader from 'react-native-animated-loader';
 
-export class Signin extends Component {
-  state = {email: '', password: ''};
+class Signin extends Component {
+  state = {
+    email: 'santoshstha2017@gmail.com',
+    password: 's@nty143',
+    loading: false,
+  };
+
+  toggleLogin(value) {
+    this.setState({
+      loading: value,
+    });
+  }
 
   validata = () => {
     const {email, password} = this.state;
     if (email !== '') {
       if (password !== '') {
-        AsyncStorage.getItem('userdata', (err, data) => {
-          const Userdata = JSON.parse(data);
-          if (Userdata !== null) {
-            if (email === Userdata.email) {
-              if (password === Userdata.password) {
-                this.props.navigation.replace('BottomTab');
-              } else {
-                alert('Password is wrong');
-              }
-            } else {
-              alert('Invalid email');
-            }
-          } else {
-            console.warn('no data');
-          }
+        this.toggleLogin(true);
+        this.props.actions.login({
+          email: this.state.email,
+          password: this.state.password,
+          onSuccess: () => {
+            this.toggleLogin(false);
+            this.props.navigation.replace('BottomTab');
+          },
+          onFailure: () => {
+            //Alert error message
+            // this.setState({
+            //   modalVisible: false,
+            // });
+            this.toggleLogin(true);
+          },
         });
       } else {
         alert('Password is Required');
@@ -51,12 +65,22 @@ export class Signin extends Component {
     return (
       <View style={styles.Container}>
         <NavHeader
-          title={'Signin'}
+          title={'Sign In'}
           onPress={() => this.props.navigation.goBack()}
         />
+        <AnimatedLoader
+          visible={this.state.loading}
+          overlayColor="rgba(255,255,255,0.75)"
+          source={require('../../assets/loader.json')}
+          animationStyle={styles.lottie}
+          speed={1}></AnimatedLoader>
         <KeyboardAwareScrollView>
           {/* top */}
           <View style={styles.bgContainer}>
+            <Image
+              style={styles.hand}
+              source={require('../../assets/hand.png')}
+            />
             <AppTextinput
               name={'Email'}
               onChangeText={(email) => this.setState({email})}
@@ -69,7 +93,7 @@ export class Signin extends Component {
             <TouchableOpacity style={styles.ftxtContainer}>
               <Text style={styles.ftxt}>Forgot Password ?</Text>
             </TouchableOpacity>
-            <AppButton title={'Signin'} onPress={() => this.validata()} />
+            <AppButton title={'Sign In'} onPress={() => this.validata()} />
           </View>
           {/* bottom */}
           <View style={styles.bottomContainer}>
@@ -81,7 +105,7 @@ export class Signin extends Component {
                 this.props.navigation.navigate('Signup');
               }}
               style={styles.SContainer}>
-              <Text style={styles.stxt}>SignUp</Text>
+              <Text style={styles.stxt}>Sign Up</Text>
             </TouchableOpacity>
           </View>
         </KeyboardAwareScrollView>
@@ -89,6 +113,22 @@ export class Signin extends Component {
     );
   }
 }
+const mapStateToProps = (state) => {
+  return {};
+};
+
+function mapDispatchToProps(dispatch) {
+  return {
+    actions: bindActionCreators(
+      {
+        login,
+      },
+      dispatch,
+    ),
+  };
+}
+
+export default connect(null, mapDispatchToProps)(Signin);
 
 const styles = StyleSheet.create({
   Container: {
@@ -104,12 +144,12 @@ const styles = StyleSheet.create({
     height: h('70%'),
   },
   ftxtContainer: {
-    marginRight: h('27%'),
+    marginRight: h('28%'),
     marginTop: h('2%'),
   },
   ftxt: {
     color: '#ea5455',
-    fontSize: h('2.2%'),
+    fontFamily: 'HelveticaNowDisplay-Regular',
   },
   bottomContainer: {
     justifyContent: 'center',
@@ -132,11 +172,15 @@ const styles = StyleSheet.create({
   },
   atxt: {
     color: 'black',
-    fontSize: h('2%'),
+    fontFamily: 'HelveticaNowDisplay-Regular',
   },
   stxt: {
     color: '#ea5455',
     fontSize: h('2%'),
-    fontWeight: 'bold',
+    fontFamily: 'HelveticaNowDisplay-Regular',
+  },
+  hand: {
+    resizeMode: 'contain',
+    height: h('30%'),
   },
 });

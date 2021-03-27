@@ -14,16 +14,17 @@ import {
   heightPercentageToDP as h,
 } from 'react-native-responsive-screen';
 import {Surface} from 'react-native-paper';
+import colors from './../assets/colors/colors';
+import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
+import AntDesign from 'react-native-vector-icons/AntDesign';
+
 export class NavHeader extends Component {
   render() {
     return (
       <Surface style={styles.surface}>
         <View style={styles.Container}>
           <TouchableOpacity onPress={this.props.onPress} style={styles.left}>
-            <Image
-              style={{width: '40%', height: '30%', resizeMode: 'contain'}}
-              source={require('../assets/arrow.png')}
-            />
+            <AntDesign name="arrowleft" color={colors.white} size={26} />
           </TouchableOpacity>
           <View style={styles.middle}>
             <Text style={styles.txt}>{this.props.title}</Text>
@@ -36,13 +37,14 @@ export class NavHeader extends Component {
 }
 const styles = StyleSheet.create({
   Container: {
-    backgroundColor: 'white',
+    backgroundColor: colors.primary,
     height: h('8%'),
     width: w('100%'),
     flexDirection: 'row',
     borderBottomColor: 'rgba(0,0,0,0.1)',
     borderBottomWidth: h('0.1%'),
-    elevation: 6,
+    borderBottomEndRadius: 24,
+    borderBottomStartRadius: 24,
   },
   left: {
     // backgroundColor: 'red',
@@ -64,18 +66,19 @@ const styles = StyleSheet.create({
     height: '100%',
   },
   txt: {
-    color: 'black',
+    color: 'white',
     fontSize: h('2.5%'),
     fontWeight: 'bold',
   },
   surface: {
     padding: 8,
     width: '100%',
-    height: h('8%'),
+    height: h('6%'),
     alignItems: 'center',
     justifyContent: 'center',
     // elevation: 5,
     // backgroundColor: 'red',
     borderRadius: h('10%'),
+    fontFamily: 'HelveticaNowDisplay-Medium',
   },
 });

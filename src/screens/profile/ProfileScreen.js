@@ -29,7 +29,7 @@ export class ProfileScreen extends Component {
             <View style={styles.img}>
               <ProfilePic />
 
-              <Text style={styles.nametxt}>Umer Aftab</Text>
+              <Text style={styles.nametxt}>Subham Dhakal</Text>
               <View style={styles.lowContainer}>
                 {/* lower */}
                 <View style={[styles.lowerContainerview, {marginTop: h('7%')}]}>
@@ -37,7 +37,7 @@ export class ProfileScreen extends Component {
                     <Text style={styles.txt}>Email:</Text>
                   </View>
                   <View style={styles.Right}>
-                    <Text style={styles.Etxt}>umer@g.com</Text>
+                    <Text style={styles.Etxt}>subhamdhakal@gmail.com</Text>
                   </View>
                 </View>
                 {/* lwer2 */}
@@ -47,11 +47,13 @@ export class ProfileScreen extends Component {
                     <Text style={styles.txt}>Phone:</Text>
                   </View>
                   <View style={styles.Right}>
-                    <Text style={styles.Etxt}>+9202020212</Text>
+                    <Text style={styles.Etxt}>9860723163</Text>
                   </View>
                 </View>
                 {/* logout */}
-                <TouchableOpacity style={styles.logout}>
+                <TouchableOpacity
+                  style={styles.logout}
+                  onPress={() => this.props.navigation.navigate('Signin')}>
                   <Text style={styles.ltxt}>logout</Text>
                 </TouchableOpacity>
               </View>

@@ -12,16 +12,15 @@ import {
   heightPercentageToDP as h,
 } from 'react-native-responsive-screen';
 import {KeyboardAwareScrollView} from '@codler/react-native-keyboard-aware-scroll-view';
+import colors from './../assets/colors/colors';
 
 export class AppButton extends Component {
   render() {
     return (
       <TouchableOpacity {...this.props} style={styles.btnContainer}>
-        <ImageBackground
-          style={styles.btn}
-          source={require('../assets/btn.png')}>
+        <View style={styles.btn}>
           <Text style={styles.btntxt}>{this.props.title}</Text>
-        </ImageBackground>
+        </View>
       </TouchableOpacity>
     );
   }
@@ -29,7 +28,7 @@ export class AppButton extends Component {
 
 const styles = StyleSheet.create({
   btnContainer: {
-    backgroundColor: 'tomato',
+    backgroundColor: colors.primary,
     height: h('6%'),
     width: '50%',
     borderRadius: h('7%'),
@@ -42,5 +41,9 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center',
   },
-  btntxt: {color: 'white', fontWeight: 'bold', fontSize: h('2.5%')},
+  btntxt: {
+    color: 'white',
+    fontSize: h('2.5%'),
+    fontFamily: 'HelveticaNowDisplay-Bold',
+  },
 });

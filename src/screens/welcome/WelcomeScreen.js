@@ -95,7 +95,7 @@ const styles = StyleSheet.create({
   txt: {
     color: 'black',
     fontSize: h('3.5%'),
-    fontWeight: 'bold',
+    fontFamily: 'HelveticaNowDisplay-Regular',
   },
   midleContainer: {
     // backgroundColor: 'tomato',
@@ -129,10 +129,10 @@ const styles = StyleSheet.create({
     height: '42%',
     justifyContent: 'flex-end',
     alignItems: 'center',
+    fontFamily: 'HelveticaNowDisplay-Regular',
   },
   txtc: {
-    color: '#ea5455',
-    fontSize: h('2.3%'),
-    fontWeight: 'bold',
+    color: 'tomato',
+    fontFamily: 'HelveticaNowDisplay-Regular',
   },
 });

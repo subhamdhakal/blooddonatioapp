@@ -15,6 +15,8 @@ export class AppTextinput extends Component {
           placeholder={this.props.name}
           style={styles.textInput}
           secureTextEntry={this.props.password}
+          editable={this.props.editable}
+          defaultValue={this.props.defaultValue}
         />
       </View>
     );
