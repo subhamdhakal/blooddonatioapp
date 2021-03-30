@@ -22,8 +22,8 @@ import AnimatedLoader from 'react-native-animated-loader';
 
 class Signin extends Component {
   state = {
-    email: 'santoshstha2017@gmail.com',
-    password: 's@nty143',
+    email: 'test2017@gmail.com',
+    password: 'webapp12345',
     loading: false,
   };
 
@@ -128,7 +128,7 @@ function mapDispatchToProps(dispatch) {
   };
 }
 
-export default connect(null, mapDispatchToProps)(Signin);
+export default connect(mapStateToProps, mapDispatchToProps)(Signin);
 
 const styles = StyleSheet.create({
   Container: {

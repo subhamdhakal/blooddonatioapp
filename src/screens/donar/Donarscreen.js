@@ -20,8 +20,10 @@ import {AppButton, NavHeader, AppTextinput} from '../../components';
 var validator = require('email-validator');
 import AsyncStorage from '@react-native-community/async-storage';
 import {AnimatedFlatList, AnimationType} from 'flatlist-intro-animations';
+import {bindActionCreators} from 'redux';
+import {connect} from 'react-redux';
 
-export class Donarscreen extends Component {
+class Donarscreen extends Component {
   state = {
     data: [
       {
@@ -106,6 +108,17 @@ export class Donarscreen extends Component {
     );
   }
 }
+const mapStateToProps = (state) => {
+  return {};
+};
+
+function mapDispatchToProps(dispatch) {
+  return {
+    actions: bindActionCreators({}, dispatch),
+  };
+}
+
+export default connect(mapStateToProps, mapDispatchToProps)(Donarscreen);
 
 const styles = StyleSheet.create({
   Container: {

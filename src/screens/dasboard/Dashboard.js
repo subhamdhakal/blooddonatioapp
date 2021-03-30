@@ -15,8 +15,12 @@ import {
 } from 'react-native-responsive-screen';
 import {ProfilePic} from '../../components';
 import {SliderBox} from 'react-native-image-slider-box';
+import {bindActionCreators} from 'redux';
+import {connect} from 'react-redux';
+import loginReducer from '../../reducers/loginReducer';
+import {fetchdonorlistandbloodrequest} from './../../actions/fetchdata';
 
-export class Dashboard extends Component {
+class Dashboard extends Component {
   state = {
     images: [
       'https://source.unsplash.com/1024x768/?nature',
@@ -25,18 +29,37 @@ export class Dashboard extends Component {
       'https://source.unsplash.com/1024x768/?tree', // Network image
     ],
   };
+  componentDidMount() {
+    this.props.actions.fetchdonorlistandbloodrequest({
+      accessToken: this.props.access_token,
+
+      onSuccess: () => {
+        // this.toggleLogin(false);
+        // this.props.navigation.replace('BottomTab');
+      },
+      onFailure: () => {
+        //Alert error message
+        // this.setState({
+        //   modalVisible: false,
+        // });
+        this.toggleLogin(true);
+      },
+    });
+  }
   render() {
     return (
       <ImageBackground
         style={styles.Container}
         source={require('../../assets/dash.png')}>
         <View style={styles.logo}>
-          <SliderBox autoplay circleLoop images={this.state.images} />
+          <SliderBox autoplay circleLoop images={this.props.sliderImages} />
         </View>
         <View style={styles.topview}>
           <View style={styles.Donar}>
             <View style={styles.leftContianer}>
-              <Text style={styles.numbertxt}>12,421</Text>
+              <Text style={styles.numbertxt}>
+                {this.props.total_count['donor_count']}
+              </Text>
               <Text style={styles.donartxt}>Donar's</Text>
             </View>
             <View style={styles.rightContianer}>
@@ -51,13 +74,15 @@ export class Dashboard extends Component {
           </View>
           <View style={styles.Donar}>
             <View style={styles.leftContianer}>
-              <Text style={styles.numbertxt}>51,492</Text>
+              <Text style={styles.numbertxt}>
+                {this.props.total_count['request_count']}
+              </Text>
               <Text style={styles.donartxt}>Request's</Text>
             </View>
             <View style={styles.rightContianer}>
               <TouchableOpacity
                 onPress={() => {
-                  this.props.navigation.navigate('CheckReques');
+                  this.props.navigation.navigate('CheckRequest');
                 }}
                 style={styles.btn}>
                 <Text style={styles.btntxt}>See Request</Text>
@@ -70,6 +95,26 @@ export class Dashboard extends Component {
     );
   }
 }
+const mapStateToProps = (state) => {
+  return {
+    sliderImages: state.loginReducer.loginResponse['event_images'],
+    access_token: state.loginReducer.loginResponse['token'],
+    total_count: state.loginReducer.loginResponse['total_count'],
+  };
+};
+
+function mapDispatchToProps(dispatch) {
+  return {
+    actions: bindActionCreators(
+      {
+        fetchdonorlistandbloodrequest,
+      },
+      dispatch,
+    ),
+  };
+}
+
+export default connect(mapStateToProps, mapDispatchToProps)(Dashboard);
 
 const styles = StyleSheet.create({
   Container: {
@@ -114,12 +159,12 @@ const styles = StyleSheet.create({
   numbertxt: {
     color: 'white',
     fontSize: h('4%'),
-    fontWeight: '600',
+    fontFamily: 'HelveticaNowDisplay-Bold',
   },
   donartxt: {
     color: 'white',
-    fontSize: h('2.5'),
-    fontWeight: 'bold',
+    fontSize: h('2%'),
+    fontFamily: 'HelveticaNowDisplay-Medium',
   },
   btn: {
     backgroundColor: 'white',
@@ -132,8 +177,9 @@ const styles = StyleSheet.create({
   },
   btntxt: {
     color: '#ea5455',
-    fontWeight: 'bold',
     fontSize: h('2%'),
+    marginLeft: h('1%'),
+    fontFamily: 'HelveticaNowDisplay-Medium',
   },
   logo: {
     // backgroundColor: 'yellow',

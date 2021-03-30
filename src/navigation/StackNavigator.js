@@ -8,10 +8,10 @@ import {WelcomeScreen} from '../screens/welcome';
 
 import {SplitScreen} from '../screens/split';
 import {OnboardingScreen} from '../screens/onboarding';
-import {Dashboard} from '../screens/dasboard';
-import {Donarscreen} from '../screens/donar';
-import {CheckReques} from '../screens/check';
-import {AddRequest} from '../screens/addrequest';
+import Dashboard from '../screens/dasboard/Dashboard';
+import Donarscreen from '../screens/donar/Donarscreen';
+import CheckRequest from '../screens/check/CheckRequest';
+import AddRequest from '../screens/addrequest/AddRequest';
 
 // navigators
 import {BottomTab} from './BottomTab';
@@ -64,8 +64,8 @@ export class StackNavigator extends Component {
             options={{headerShown: false}}
           />
           <Stack.Screen
-            name="CheckReques"
-            component={CheckReques}
+            name="CheckRequest"
+            component={CheckRequest}
             options={{headerShown: false}}
           />
           <Stack.Screen

@@ -17,6 +17,7 @@ export class AppTextinput extends Component {
           secureTextEntry={this.props.password}
           editable={this.props.editable}
           defaultValue={this.props.defaultValue}
+          autoFocus={this.props.autoFocus}
         />
       </View>
     );

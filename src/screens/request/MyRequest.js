@@ -18,6 +18,8 @@ import {AppButton, NavHeader, AppTextinput, ProfilePic} from '../../components';
 import AsyncStorage from '@react-native-community/async-storage';
 import AntDesign from 'react-native-vector-icons/AntDesign';
 import {AnimatedFlatList, AnimationType} from 'flatlist-intro-animations';
+import {bindActionCreators} from 'redux';
+import {connect} from 'react-redux';
 
 export class MyRequest extends Component {
   state = {
@@ -87,7 +89,7 @@ export class MyRequest extends Component {
         <ImageBackground
           source={require('../../assets/dash.png')}
           style={styles.ImageBackground}>
-          <Text style={styles.imgtxt}>MY REQUEST</Text>
+          <Text style={styles.imgtxt}>Requests made</Text>
           <View style={styles.newRequest}>
             <View style={styles.left}>
               <Text style={styles.no}>9</Text>
@@ -123,6 +125,19 @@ export class MyRequest extends Component {
     );
   }
 }
+const mapStateToProps = (state) => {
+  return {
+    sliderImages: state.loginReducer.loginResponse['event_images'],
+  };
+};
+
+function mapDispatchToProps(dispatch) {
+  return {
+    actions: bindActionCreators({}, dispatch),
+  };
+}
+
+export default connect(mapStateToProps, mapDispatchToProps)(MyRequest);
 const styles = StyleSheet.create({
   Container: {
     flex: 1,
@@ -135,9 +150,9 @@ const styles = StyleSheet.create({
   },
   imgtxt: {
     color: 'white',
-    fontSize: h('4%'),
-    fontWeight: 'bold',
+    fontSize: h('3%'),
     marginTop: h('3%'),
+    fontFamily: 'HelveticaNowDisplay-Medium',
   },
   newRequest: {
     backgroundColor: '#fff2',
@@ -163,25 +178,30 @@ const styles = StyleSheet.create({
   },
   btn: {
     backgroundColor: 'white',
-    width: '85%',
+    width: '95%',
     height: h('5%'),
     borderRadius: h('10%'),
     justifyContent: 'center',
     alignItems: 'center',
     flexDirection: 'row',
-    elevation: h('1%'),
+    elevation: h('2%'),
   },
   btntxt: {
     color: '#ea5455',
-    fontWeight: 'bold',
     fontSize: h('2%'),
     marginLeft: h('1%'),
+    fontFamily: 'HelveticaNowDisplay-Medium',
   },
   no: {
     color: 'white',
     fontSize: h('4%'),
+    fontFamily: 'HelveticaNowDisplay-Bold',
   },
-  Requst: {color: 'white', fontSize: h('2%'), fontWeight: 'bold'},
+  Requst: {
+    color: 'white',
+    fontSize: h('2%'),
+    fontFamily: 'HelveticaNowDisplay-Medium',
+  },
   flatlistItem: {
     backgroundColor: '#fff',
     width: '90%',
@@ -225,11 +245,13 @@ const styles = StyleSheet.create({
     color: 'black',
     fontSize: h('2%'),
     marginTop: h('3%'),
+    fontFamily: 'HelveticaNowDisplay-Medium',
   },
   addresstxt: {
     color: 'silver',
     fontSize: h('2%'),
     // marginTop: h('1%'),
+    fontFamily: 'HelveticaNowDisplay-Medium',
   },
   noConatiner: {
     // backgroundColor: 'red',
@@ -244,10 +266,10 @@ const styles = StyleSheet.create({
   },
   requestContainr: {
     backgroundColor: '#FF215D',
-    width: '80%',
+    width: '75%',
     height: '25%',
     justifyContent: 'center',
-    paddingLeft: h('2%'),
+    paddingLeft: h('1%'),
     // borderRadius: h('10%'),
     marginTop: h('3%'),
 
@@ -255,8 +277,8 @@ const styles = StyleSheet.create({
     borderBottomLeftRadius: h('10%'),
   },
   circlebLood: {
-    width: '50%',
-    height: '42%',
+    width: '30%',
+    height: '30%',
     borderRadius: h('10%'),
     // backgroundColor: 'red',
     marginTop: h('2%'),
@@ -268,11 +290,13 @@ const styles = StyleSheet.create({
   },
   circelTxt: {
     color: '#FF215D',
-    fontSize: h('2.5%'),
+    fontSize: h('1.5%'),
+    fontFamily: 'HelveticaNowDisplay-Medium',
   },
   requestTxt: {
     color: '#Ffff',
-    fontSize: h('2%'),
+    fontSize: h('1.5%'),
+    fontFamily: 'HelveticaNowDisplay-Medium',
   },
   frespace: {
     backgroundColor: 'white',

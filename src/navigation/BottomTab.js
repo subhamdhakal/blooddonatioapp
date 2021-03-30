@@ -4,9 +4,9 @@ const Tab = createMaterialBottomTabNavigator();
 import AntDesign from 'react-native-vector-icons/AntDesign';
 
 // screen
-import {Dashboard} from '../screens/dasboard';
-import {MyRequest} from '../screens/request';
-import {ProfileScreen} from '../screens/profile';
+import Dashboard from '../screens/dasboard/Dashboard';
+import MyRequest from '../screens/request/MyRequest';
+import ProfileScreen from '../screens/profile/ProfileScreen';
 
 export class BottomTab extends Component {
   render() {

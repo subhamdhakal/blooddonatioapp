@@ -22,7 +22,9 @@ import AsyncStorage from '@react-native-community/async-storage';
 import {Icon} from 'react-native-elements';
 import {AnimatedFlatList, AnimationType} from 'flatlist-intro-animations';
 
-export class CheckReques extends Component {
+import {bindActionCreators} from 'redux';
+import {connect} from 'react-redux';
+class CheckRequest extends Component {
   state = {
     data: [
       {user: 1},
@@ -70,6 +72,17 @@ export class CheckReques extends Component {
     );
   }
 }
+const mapStateToProps = (state) => {
+  return {};
+};
+
+function mapDispatchToProps(dispatch) {
+  return {
+    actions: bindActionCreators({}, dispatch),
+  };
+}
+
+export default connect(null, mapDispatchToProps)(CheckRequest);
 
 const styles = StyleSheet.create({
   Container: {

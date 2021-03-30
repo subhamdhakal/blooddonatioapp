@@ -9,18 +9,64 @@ import {
   heightPercentageToDP as h,
 } from 'react-native-responsive-screen';
 import {AppButton, NavHeader, AppTextinput} from '../../components';
+import {bindActionCreators} from 'redux';
+import GetLocation from 'react-native-get-location';
+import Geocoder from 'react-native-geocoding';
 
-export class AddRequest extends Component {
-  state = {blood: ''};
+import {connect} from 'react-redux';
+import colors from './../../assets/colors/colors';
+import {AntDesign} from 'react-native-vector-icons/AntDesign';
+class AddRequest extends Component {
+  state = {blood: '', latitude: '', longitude: '', address: 'Fetching...'};
+  componentDidMount() {
+    GetLocation.getCurrentPosition({
+      enableHighAccuracy: true,
+      timeout: 15000,
+    })
+      .then((location) => {
+        console.log(location);
+        Geocoder.init('AIzaSyCp_eYV5VpunCIETQwG6SECfCsDOllLvqk'); // use a valid API key
+        Geocoder.from(location.latitude, location.longitude)
+          .then((json) => {
+            var addressComponent = json.results[0].address_components[0];
+            this.setState({
+              latitude: '' + location.latitude,
+              longitude: '' + location.longitude,
+              address: '' + addressComponent['long_name'],
+            });
+            console.log(addressComponent);
+          })
+          .catch((error) => console.warn(error));
+      })
+      .catch((error) => {
+        const {code, message} = error;
+        console.warn(code, message);
+      });
+  }
+  getRequestLocation() {}
+
+  validateAndPost() {}
   render() {
     return (
       <View style={styles.Container}>
-        <NavHeader title={'Add Request'} />
-        <Text style={styles.detail}>DETAILS</Text>
+        <NavHeader
+          onPress={() => this.props.navigation.goBack()}
+          title={'Add Request'}
+        />
+        <Text style={styles.detail}>Details</Text>
         <View style={styles.ContainerView}>
-          <AppTextinput name={'Email'} />
-          <AppTextinput name={'Phone No'} />
-          <AppTextinput name={'Address'} />
+          <AppTextinput
+            name={'Email'}
+            defaultValue={this.props.userData['user']['email']}
+          />
+          <AppTextinput
+            name={'Phone No'}
+            defaultValue={this.props.userData['user']['mobile']}
+          />
+          <AppTextinput
+            name={'Address'}
+            defaultValue={this.props.userData['user']['location']}
+          />
         </View>
 
         {/* add */}
@@ -206,6 +252,13 @@ export class AddRequest extends Component {
 
           {/* end */}
         </View>
+        <View style={{alignItems: 'center'}}>
+          {/* <AntDesign name="appstore1" color={colors.primary} size={26} /> */}
+
+          <Text style={styles.txtl}>
+            {'Current Location: ' + this.state.address}
+          </Text>
+        </View>
         <View style={styles.btn}>
           <AppButton
             title={'Submit'}
@@ -221,6 +274,20 @@ export class AddRequest extends Component {
   }
 }
 
+const mapStateToProps = (state) => {
+  return {
+    userData: state.loginReducer.loginResponse,
+  };
+};
+
+function mapDispatchToProps(dispatch) {
+  return {
+    actions: bindActionCreators({}, dispatch),
+  };
+}
+
+export default connect(mapStateToProps, mapDispatchToProps)(AddRequest);
+
 const styles = StyleSheet.create({
   Container: {
     flex: 1,
@@ -231,10 +298,11 @@ const styles = StyleSheet.create({
     marginTop: h('1%'),
   },
   detail: {
-    marginLeft: h('6%'),
+    fontSize: h('2.5%'),
+    color: 'black',
+    marginLeft: h('7%'),
     marginTop: h('3%'),
-    fontWeight: 'bold',
-    fontSize: h('3%'),
+    fontFamily: 'HelveticaNowDisplay-ExtraBold',
   },
   botmContainer: {
     // backgroundColor: 'tomato',
@@ -244,10 +312,10 @@ const styles = StyleSheet.create({
   },
   gtxt: {
     fontSize: h('2.5%'),
-    fontWeight: 'bold',
     color: 'black',
     marginLeft: h('7%'),
     marginTop: h('1%'),
+    fontFamily: 'HelveticaNowDisplay-ExtraBold',
   },
   circle: {
     // backgroundColor: 'yellow',
@@ -264,6 +332,12 @@ const styles = StyleSheet.create({
   txta: {
     fontSize: h('2%'),
     // color: this.state.blood !== '' ? 'white' : 'black',
+    fontFamily: 'HelveticaNowDisplay-Regular',
+  },
+  txtl: {
+    fontSize: h('2%'),
+    // color: this.state.blood !== '' ? 'white' : 'black',
+    fontFamily: 'HelveticaNowDisplay-Regular',
   },
   BottomContainerView: {
     width: '100%',

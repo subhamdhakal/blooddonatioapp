@@ -67,8 +67,8 @@ const styles = StyleSheet.create({
   },
   txt: {
     color: 'white',
-    fontSize: h('2.5%'),
-    fontWeight: 'bold',
+    fontSize: h('2.1%'),
+    fontFamily: 'HelveticaNowDisplay-Bold',
   },
   surface: {
     padding: 8,
