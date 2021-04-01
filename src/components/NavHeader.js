@@ -43,8 +43,6 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     borderBottomColor: 'rgba(0,0,0,0.1)',
     borderBottomWidth: h('0.1%'),
-    borderBottomEndRadius: 24,
-    borderBottomStartRadius: 24,
   },
   left: {
     // backgroundColor: 'red',

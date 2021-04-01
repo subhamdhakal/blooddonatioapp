@@ -1,5 +1,6 @@
 import {BASE_URL} from './../constants/app-constants';
 import axios from 'react-native-axios';
+import {loginSuccessful} from '../reducers/loginReducer';
 const queryString = require('query-string');
 export const signup = ({signUpDetails, onSuccess, onFailure}) => {
   return (dispatch) => {
@@ -12,10 +13,12 @@ export const signup = ({signUpDetails, onSuccess, onFailure}) => {
       })
       .then((res) => {
         console.log(res);
+        dispatch(loginSuccessful(res.data));
+
         onSuccess();
       })
       .catch((error) => {
-        console.log(JSON.stringify(error));
+        onFailure(error.response.data.error);
       });
   };
 };

@@ -34,6 +34,7 @@ const styles = StyleSheet.create({
     borderRadius: h('7%'),
     overflow: 'hidden',
     marginTop: h('2%'),
+    elevation: 5,
   },
   btn: {
     width: '100%',

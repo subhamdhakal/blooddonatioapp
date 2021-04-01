@@ -17,7 +17,22 @@ import {connect} from 'react-redux';
 import colors from './../../assets/colors/colors';
 import {AntDesign} from 'react-native-vector-icons/AntDesign';
 class AddRequest extends Component {
-  state = {blood: '', latitude: '', longitude: '', address: 'Fetching...'};
+  state = {
+    blood: '',
+    latitude: '',
+    longitude: '',
+    address: 'Fetching...',
+    loading: false,
+    email: '',
+    phone_no: '',
+    latitude: '',
+    longitude: '',
+  };
+  toggleLoading(value) {
+    this.setState({
+      loading: value,
+    });
+  }
   componentDidMount() {
     GetLocation.getCurrentPosition({
       enableHighAccuracy: true,
@@ -45,7 +60,38 @@ class AddRequest extends Component {
   }
   getRequestLocation() {}
 
-  validateAndPost() {}
+  validateAndPost() {
+    if (this.state.blood != '') {
+      const value = {
+        email: 'blooddonate+239@gmail.com',
+        phone_no: '9849210248',
+        address: 'tt',
+        blood_group: 'O+',
+        status: 'PENDING',
+        created_date: '2020-12-01',
+        latitude: '27.75791000',
+        longitude: '85.30256721',
+      };
+      this.toggleLogin(true);
+
+      this.props.actions.signup({
+        bloodRequestValue: value,
+
+        onSuccess: () => {
+          this.toggleLogin(false);
+          this.props.navigation.replace('BottomTab');
+        },
+        onFailure: (errorMsg) => {
+          this.toggleLogin(false);
+          alert(errorMsg);
+
+          //Alert error message
+        },
+      });
+    } else {
+      alert('Please select blood group');
+    }
+  }
   render() {
     return (
       <View style={styles.Container}>
@@ -263,7 +309,7 @@ class AddRequest extends Component {
           <AppButton
             title={'Submit'}
             onPress={() => {
-              console.warn(this.state.blood);
+              this.validateAndPost();
             }}
           />
         </View>

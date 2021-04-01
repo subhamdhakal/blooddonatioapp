@@ -1,7 +1,7 @@
 const colors = {
   accentOrange: '#F2932C',
   primary: '#FF3A60',
-  textDarkGray: '#757575',
+  textDarkGray: '#D3D3D3',
   white: '#FFFFFF',
   acceptGreen: '#27ae60',
   rejectRed: '#c0392b',

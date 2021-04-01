@@ -20,63 +20,80 @@ import AntDesign from 'react-native-vector-icons/AntDesign';
 import {AnimatedFlatList, AnimationType} from 'flatlist-intro-animations';
 import {bindActionCreators} from 'redux';
 import {connect} from 'react-redux';
+import {Avatar} from 'react-native-paper';
+import colors from './../../assets/colors/colors';
+import {fetcheduserrequestlist} from '../../actions/fetchdata';
+import {color} from 'react-native-reanimated';
 
 export class MyRequest extends Component {
-  state = {
-    data: [
-      {
-        name: 'Umer',
-        fName: 'Irfan',
-        dob: '17-08-1999',
-        city: 'Sargodha',
+  componentDidMount() {
+    this.props.actions.fetcheduserrequestlist({
+      accessToken: this.props.access_token,
+      user_id: this.props.userData['user_id'],
+
+      onSuccess: () => {
+        // this.toggleLogin(false);
+        // this.props.navigation.replace('BottomTab');
       },
-      {
-        name: 'Umers',
-        fName: 'Irfan',
-        dob: '17-08-1999',
-        city: 'Sargodha',
+      onFailure: () => {
+        //Alert error message
+        // this.setState({
+        //   modalVisible: false,
+        // });
       },
-      {
-        name: 'Umes',
-        fName: 'Irfan',
-        dob: '17-08-1999',
-        city: 'Sargodha',
-      },
-      {
-        name: 'Uers',
-        fName: 'Irfan',
-        dob: '17-08-1999',
-        city: 'Sargodha',
-      },
-      {
-        name: 'Urs',
-        fName: 'Irfan',
-        dob: '17-08-1999',
-        city: 'Sargodha',
-      },
-    ],
-  };
+    });
+  }
 
   RenderItem = (item) => (
     <View style={styles.flatlistContainer}>
       <View style={styles.flatlistItem}>
         <View style={styles.leftContainer}>
           {/* img */}
-          <View style={styles.imgcontainer}></View>
+          <Avatar.Text
+            size={64}
+            color={colors.white}
+            label={item.blood_group}
+            style={{backgroundColor: colors.primary}}
+            labelStyle={{
+              fontSize: 32,
+            }}
+          />
         </View>
         <View style={styles.RightContainer}>
-          <Text style={styles.nametxt}>NAME</Text>
-          <Text style={styles.addresstxt}>Address</Text>
-          <View style={styles.noConatiner}>
-            <Text style={styles.notxt}>03040506753</Text>
+          <Text
+            style={{
+              fontFamily: 'HelveticaNowDisplay-Bold',
+            }}>
+            {'Requested Date: ' + item.created_date}
+          </Text>
+          <View
+            style={{
+              flexWrap: 'wrap',
+              alignContent: 'flex-end',
+              alignItems: 'flex-end',
+            }}>
+            <TouchableOpacity
+              style={{
+                backgroundColor: colors.primary,
+                padding: 8,
+                borderRadius: 24,
+                elevation: 5,
+                marginTop: 12,
+              }}>
+              <Text
+                style={{
+                  color: colors.white,
+                  fontSize: 12,
+                  fontFamily: 'HelveticaNowDisplay-Bold',
+                }}>
+                Delete
+              </Text>
+            </TouchableOpacity>
           </View>
         </View>
         <View style={styles.LastContainer}>
           <View style={styles.requestContainr}>
             <Text style={styles.requestTxt}>Requested</Text>
-          </View>
-          <View style={styles.circlebLood}>
-            <Text style={styles.circelTxt}>A+</Text>
           </View>
         </View>
       </View>
@@ -92,7 +109,7 @@ export class MyRequest extends Component {
           <Text style={styles.imgtxt}>Requests made</Text>
           <View style={styles.newRequest}>
             <View style={styles.left}>
-              <Text style={styles.no}>9</Text>
+              <Text style={styles.no}>{this.props.mybloodrequest.length}</Text>
               <Text style={styles.Requst}>No of Request</Text>
             </View>
             <View style={styles.right}>
@@ -111,9 +128,9 @@ export class MyRequest extends Component {
         <View style={styles.flatlistContainerView}>
           <AnimatedFlatList
             contentContainerStyle={{marginTop: -h('2%')}}
-            data={this.state.data}
+            data={this.props.mybloodrequest}
             renderItem={({item}) => this.RenderItem(item)}
-            animationType={AnimationType.Dive}
+            animationType={AnimationType.SlideFromRight}
             keyExtractor={(item) => item.name}
             animationDuration={1000}
             focused={true}
@@ -127,13 +144,20 @@ export class MyRequest extends Component {
 }
 const mapStateToProps = (state) => {
   return {
-    sliderImages: state.loginReducer.loginResponse['event_images'],
+    mybloodrequest: state.dataReducer.bloodRequest,
+    userData: state.loginReducer.loginResponse['user'],
+    access_token: state.loginReducer.loginResponse['token'],
   };
 };
 
 function mapDispatchToProps(dispatch) {
   return {
-    actions: bindActionCreators({}, dispatch),
+    actions: bindActionCreators(
+      {
+        fetcheduserrequestlist,
+      },
+      dispatch,
+    ),
   };
 }
 
@@ -145,14 +169,14 @@ const styles = StyleSheet.create({
   ImageBackground: {
     // backgroundColor: 'red',
     width: '100%',
-    height: h('35%'),
+    height: h('30%'),
     alignItems: 'center',
   },
   imgtxt: {
     color: 'white',
     fontSize: h('3%'),
     marginTop: h('3%'),
-    fontFamily: 'HelveticaNowDisplay-Medium',
+    fontFamily: 'HelveticaNowDisplay-Bold',
   },
   newRequest: {
     backgroundColor: '#fff2',
@@ -190,7 +214,7 @@ const styles = StyleSheet.create({
     color: '#ea5455',
     fontSize: h('2%'),
     marginLeft: h('1%'),
-    fontFamily: 'HelveticaNowDisplay-Medium',
+    fontFamily: 'HelveticaNowDisplay-Bold',
   },
   no: {
     color: 'white',
@@ -205,14 +229,15 @@ const styles = StyleSheet.create({
   flatlistItem: {
     backgroundColor: '#fff',
     width: '90%',
-    height: h('19%'),
+    height: h('15%'),
     justifyContent: 'center',
     flexDirection: 'row',
     borderRadius: h('1%'),
+    marginTop: h('1%'),
   },
   flatlistContainer: {
     alignItems: 'center',
-    marginTop: h('4%'),
+    marginTop: h('2%'),
   },
   flatlistContainerView: {
     backgroundColor: '#E6DDDD',
@@ -229,6 +254,7 @@ const styles = StyleSheet.create({
     // backgroundColor: 'red',
     width: '40%',
     height: '100%',
+    justifyContent: 'center',
   },
   imgcontainer: {
     backgroundColor: '#ea5455',

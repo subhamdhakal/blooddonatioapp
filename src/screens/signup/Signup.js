@@ -30,6 +30,7 @@ import DateTimePicker from '@react-native-community/datetimepicker';
 import {signup} from './../../actions/signup';
 import RNModalPicker from './../../components/RNModalPicker';
 import {DISTRICT_LIST} from './../../constants/app-constants';
+import colors from '../../assets/colors/colors';
 
 class Signup extends Component {
   state = {
@@ -93,7 +94,7 @@ class Signup extends Component {
       dateofbirth,
       district,
     } = this.state;
-    const check = validator.validate(this.state.email);
+    const check = validator.validate(this.state.email.replace(/\s/g, ''));
     if (check === true) {
       if (password !== '') {
         if (password.length > 8) {
@@ -107,7 +108,7 @@ class Signup extends Component {
                         if (district != '') {
                           const value = {
                             name: this.state.name,
-                            email: this.state.email,
+                            email: this.state.email.replace(/\s/g, ''),
                             mobile: this.state.phone,
                             password: this.state.password,
                             password_confirmation: this.state.confirmpassword,
@@ -128,8 +129,9 @@ class Signup extends Component {
                               this.toggleLogin(false);
                               this.props.navigation.replace('BottomTab');
                             },
-                            onFailure: () => {
+                            onFailure: (errorMsg) => {
                               this.toggleLogin(false);
+                              alert(errorMsg);
 
                               //Alert error message
                             },
@@ -201,6 +203,12 @@ class Signup extends Component {
           title={'Signup'}
           onPress={() => this.props.navigation.goBack()}
         />
+        <AnimatedLoader
+          visible={this.state.loading}
+          overlayColor="rgba(255,255,255,0.75)"
+          source={require('../../assets/loader.json')}
+          animationStyle={styles.lottie}
+          speed={1}></AnimatedLoader>
         {/* top */}
         <AnimatedLoader
           visible={this.state.loading}
@@ -222,6 +230,7 @@ class Signup extends Component {
               <AppTextinput
                 name={'Phone'}
                 onChangeText={(phone) => this.setState({phone})}
+                keyboardType={'numeric'}
               />
               <TouchableOpacity
                 onPress={() =>
@@ -288,89 +297,6 @@ class Signup extends Component {
             </View>
           </View>
           <View style={styles.midContainer}>
-            <Text style={styles.gtxt}>Role</Text>
-            <View style={styles.imgContainer}>
-              <TouchableOpacity
-                onPress={() => {
-                  const r = '2';
-                  this.setState({role: r});
-                }}
-                style={styles.img2}>
-                {this.state.role === '2' ? (
-                  <Image
-                    style={styles.imgs}
-                    source={require('../../assets/men2.png')}
-                  />
-                ) : (
-                  <Image
-                    style={styles.imgs}
-                    source={require('../../assets/men.png')}
-                  />
-                )}
-                <Text
-                  style={[
-                    styles.txtm,
-                    ,
-                    {
-                      color: this.state.role === '2' ? '#ea5455' : '#000',
-                    },
-                  ]}>
-                  Donor
-                </Text>
-              </TouchableOpacity>
-              <TouchableOpacity
-                onPress={() => this.setState({role: '3'})}
-                style={styles.img2}>
-                {this.state.gender === '3' ? (
-                  <Image
-                    style={styles.imgs}
-                    source={require('../../assets/women2.png')}
-                  />
-                ) : (
-                  <Image
-                    style={styles.imgs}
-                    source={require('../../assets/woman.png')}
-                  />
-                )}
-                <Text
-                  style={[
-                    styles.txtf,
-                    {
-                      color: this.state.role === '3' ? '#ff7171' : '#000',
-                    },
-                  ]}>
-                  Receiver
-                </Text>
-              </TouchableOpacity>
-
-              <TouchableOpacity
-                onPress={() => this.setState({role: '4'})}
-                style={styles.img2}>
-                {this.state.gender === '4' ? (
-                  <Image
-                    style={styles.imgs}
-                    source={require('../../assets/women2.png')}
-                  />
-                ) : (
-                  <Image
-                    style={styles.imgs}
-                    source={require('../../assets/woman.png')}
-                  />
-                )}
-                <Text
-                  style={[
-                    styles.txtf,
-                    {
-                      color: this.state.role === '4' ? '#ff7171' : '#000',
-                    },
-                  ]}>
-                  Donor/Receiver
-                </Text>
-              </TouchableOpacity>
-            </View>
-          </View>
-
-          <View style={styles.midContainer}>
             <Text style={styles.gtxt}>Gender</Text>
             <View style={styles.imgContainer}>
               <TouchableOpacity
@@ -382,20 +308,25 @@ class Signup extends Component {
                 {this.state.gender === 'male' ? (
                   <Image
                     style={styles.imgs}
-                    source={require('../../assets/men2.png')}
+                    source={require('../../assets/man.png')}
+                    tintColor={colors.primary}
                   />
                 ) : (
                   <Image
                     style={styles.imgs}
-                    source={require('../../assets/men.png')}
+                    source={require('../../assets/man.png')}
+                    tintColor={colors.textDarkGray}
                   />
                 )}
                 <Text
                   style={[
-                    styles.txtm,
+                    styles.txtf,
                     ,
                     {
-                      color: this.state.gender === 'male' ? '#ea5455' : '#000',
+                      color:
+                        this.state.gender === 'male'
+                          ? '#ea5455'
+                          : colors.textDarkGray,
                     },
                   ]}>
                   Male
@@ -407,12 +338,14 @@ class Signup extends Component {
                 {this.state.gender === 'Female' ? (
                   <Image
                     style={styles.imgs}
-                    source={require('../../assets/women2.png')}
+                    source={require('../../assets/woman.png')}
+                    tintColor={colors.primary}
                   />
                 ) : (
                   <Image
                     style={styles.imgs}
                     source={require('../../assets/woman.png')}
+                    tintColor={colors.textDarkGray}
                   />
                 )}
                 <Text
@@ -420,7 +353,9 @@ class Signup extends Component {
                     styles.txtf,
                     {
                       color:
-                        this.state.gender === 'Female' ? '#ff7171' : '#000',
+                        this.state.gender === 'Female'
+                          ? '#ff7171'
+                          : colors.textDarkGray,
                     },
                   ]}>
                   Female
@@ -428,6 +363,104 @@ class Signup extends Component {
               </TouchableOpacity>
             </View>
           </View>
+          <View style={styles.midContainer}>
+            <Text style={styles.gtxt}>Role</Text>
+            <View style={styles.imgContainer}>
+              <TouchableOpacity
+                onPress={() => {
+                  const r = '2';
+                  this.setState({role: r});
+                }}
+                style={styles.img2}>
+                {this.state.role === '2' ? (
+                  <Image
+                    style={styles.imgs}
+                    source={require('../../assets/give.png')}
+                    tintColor={colors.primary}
+                  />
+                ) : (
+                  <Image
+                    style={styles.imgs}
+                    source={require('../../assets/give.png')}
+                    tintColor={colors.textDarkGray}
+                  />
+                )}
+                <Text
+                  style={[
+                    styles.txtf,
+                    ,
+                    {
+                      color:
+                        this.state.role === '2'
+                          ? '#ea5455'
+                          : colors.textDarkGray,
+                    },
+                  ]}>
+                  Donor
+                </Text>
+              </TouchableOpacity>
+              <TouchableOpacity
+                onPress={() => this.setState({role: '3'})}
+                style={styles.img2}>
+                {this.state.role === '3' ? (
+                  <Image
+                    style={styles.imgs}
+                    source={require('../../assets/receive.png')}
+                    tintColor={colors.primary}
+                  />
+                ) : (
+                  <Image
+                    style={styles.imgs}
+                    source={require('../../assets/receive.png')}
+                    tintColor={colors.textDarkGray}
+                  />
+                )}
+                <Text
+                  style={[
+                    styles.txtf,
+                    {
+                      color:
+                        this.state.role === '3'
+                          ? '#ff7171'
+                          : colors.textDarkGray,
+                    },
+                  ]}>
+                  Receiver
+                </Text>
+              </TouchableOpacity>
+
+              <TouchableOpacity
+                onPress={() => this.setState({role: '4'})}
+                style={styles.img2}>
+                {this.state.role === '4' ? (
+                  <Image
+                    style={styles.imgs}
+                    source={require('../../assets/both.png')}
+                    tintColor={colors.primary}
+                  />
+                ) : (
+                  <Image
+                    style={styles.imgs}
+                    source={require('../../assets/both.png')}
+                    tintColor={colors.textDarkGray}
+                  />
+                )}
+                <Text
+                  style={[
+                    styles.txtf,
+                    {
+                      color:
+                        this.state.role === '4'
+                          ? '#ff7171'
+                          : colors.textDarkGray,
+                    },
+                  ]}>
+                  Donor/Receiver
+                </Text>
+              </TouchableOpacity>
+            </View>
+          </View>
+
           <View style={styles.botmContainer}>
             <Text style={styles.gtxt}>Select Blood Group</Text>
             {/* circle */}
@@ -449,7 +482,10 @@ class Signup extends Component {
                     styles.txta,
                     ,
                     {
-                      color: this.state.blood === 'A+' ? '#fff' : '#000',
+                      color:
+                        this.state.blood === 'A+'
+                          ? '#fff'
+                          : colors.textDarkGray,
                     },
                   ]}>
                   A+
@@ -471,7 +507,10 @@ class Signup extends Component {
                     styles.txta,
                     ,
                     {
-                      color: this.state.blood === 'A-' ? '#fff' : '#000',
+                      color:
+                        this.state.blood === 'A-'
+                          ? '#fff'
+                          : colors.textDarkGray,
                     },
                   ]}>
                   A-
@@ -493,7 +532,10 @@ class Signup extends Component {
                     styles.txta,
                     ,
                     {
-                      color: this.state.blood === 'B+' ? '#fff' : '#000',
+                      color:
+                        this.state.blood === 'B+'
+                          ? '#fff'
+                          : colors.textDarkGray,
                     },
                   ]}>
                   B+
@@ -515,7 +557,10 @@ class Signup extends Component {
                     styles.txta,
                     ,
                     {
-                      color: this.state.blood === 'B-' ? '#fff' : '#000',
+                      color:
+                        this.state.blood === 'B-'
+                          ? '#fff'
+                          : colors.textDarkGray,
                     },
                   ]}>
                   B-
@@ -537,7 +582,10 @@ class Signup extends Component {
                     styles.txta,
                     ,
                     {
-                      color: this.state.blood === 'O+' ? '#fff' : '#000',
+                      color:
+                        this.state.blood === 'O+'
+                          ? '#fff'
+                          : colors.textDarkGray,
                     },
                   ]}>
                   O+
@@ -559,7 +607,10 @@ class Signup extends Component {
                     styles.txta,
                     ,
                     {
-                      color: this.state.blood === 'O-' ? '#fff' : '#000',
+                      color:
+                        this.state.blood === 'O-'
+                          ? '#fff'
+                          : colors.textDarkGray,
                     },
                   ]}>
                   O-
@@ -584,7 +635,10 @@ class Signup extends Component {
                     styles.txta,
                     ,
                     {
-                      color: this.state.blood === 'AB+' ? '#fff' : '#000',
+                      color:
+                        this.state.blood === 'AB+'
+                          ? '#fff'
+                          : colors.textDarkGray,
                     },
                   ]}>
                   AB+
@@ -606,7 +660,10 @@ class Signup extends Component {
                     styles.txta,
                     ,
                     {
-                      color: this.state.blood === 'AB-' ? '#fff' : '#000',
+                      color:
+                        this.state.blood === 'AB-'
+                          ? '#fff'
+                          : colors.textDarkGray,
                     },
                   ]}>
                   AB-
@@ -740,9 +797,9 @@ const styles = StyleSheet.create({
     resizeMode: 'contain',
   },
   txtf: {
-    fontSize: h('2%'),
+    fontSize: h('1.5%'),
     marginTop: h('1.5%'),
-    fontFamily: 'HelveticaNowDisplay-Regular',
+    fontFamily: 'HelveticaNowDisplay-Bold',
   },
   txtm: {
     color: '#000',
@@ -765,12 +822,12 @@ const styles = StyleSheet.create({
     marginLeft: h('2%'),
     justifyContent: 'center',
     alignItems: 'center',
-    borderWidth: h('0.1%'),
+    borderWidth: h('0.3%'),
     borderColor: 'rgba(0,0,0,0.3)',
   },
   txta: {
-    fontSize: h('2%'),
-    fontFamily: 'HelveticaNowDisplay-Regular',
+    fontSize: h('1.6%'),
+    fontFamily: 'HelveticaNowDisplay-Bold',
 
     // color: this.state.blood !== '' ? 'white' : 'black',
   },

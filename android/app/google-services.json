@@ -1,0 +1,39 @@
+{
+  "project_info": {
+    "project_number": "221674244219",
+    "project_id": "bloodbook-f98ea",
+    "storage_bucket": "bloodbook-f98ea.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:221674244219:android:30a7e841d905b1835dfade",
+        "android_client_info": {
+          "package_name": "com.fibonacciengineeringanditsolutions.bloodbook"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "221674244219-gqgbtl15rfethno4i9jmpao0kkuummrd.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAhYvrH09VDoSno3hM3H-HM1TYSH8FWMFs"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "221674244219-gqgbtl15rfethno4i9jmpao0kkuummrd.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

@@ -19,6 +19,7 @@ import {login} from './../../actions/login';
 import {bindActionCreators} from 'redux';
 import {connect} from 'react-redux';
 import AnimatedLoader from 'react-native-animated-loader';
+import {configureNotification} from './../../utils/NotificationConfigure';
 
 class Signin extends Component {
   state = {
@@ -34,6 +35,8 @@ class Signin extends Component {
   }
 
   validata = () => {
+    configureNotification();
+
     const {email, password} = this.state;
     if (email !== '') {
       if (password !== '') {
@@ -45,12 +48,13 @@ class Signin extends Component {
             this.toggleLogin(false);
             this.props.navigation.replace('BottomTab');
           },
-          onFailure: () => {
+          onFailure: (errorMsg) => {
             //Alert error message
             // this.setState({
             //   modalVisible: false,
             // });
-            this.toggleLogin(true);
+            this.toggleLogin(false);
+            alert(errorMsg);
           },
         });
       } else {
@@ -149,7 +153,9 @@ const styles = StyleSheet.create({
   },
   ftxt: {
     color: '#ea5455',
-    fontFamily: 'HelveticaNowDisplay-Regular',
+    fontSize: h('1.8%'),
+    fontFamily: 'HelveticaNowDisplay-Bold',
+    marginLeft: h('4%'),
   },
   bottomContainer: {
     justifyContent: 'center',
@@ -172,12 +178,14 @@ const styles = StyleSheet.create({
   },
   atxt: {
     color: 'black',
+    fontSize: h('1.4%'),
+
     fontFamily: 'HelveticaNowDisplay-Regular',
   },
   stxt: {
     color: '#ea5455',
-    fontSize: h('2%'),
-    fontFamily: 'HelveticaNowDisplay-Regular',
+    fontSize: h('1.8%'),
+    fontFamily: 'HelveticaNowDisplay-Bold',
   },
   hand: {
     resizeMode: 'contain',

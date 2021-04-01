@@ -10,7 +10,10 @@ import {
   ImageBackground,
   TouchableOpacity,
   ScrollView,
+  TextInput,
 } from 'react-native';
+import {SearchBar} from 'react-native-elements';
+
 import {
   widthPercentageToDP as w,
   heightPercentageToDP as h,
@@ -22,64 +25,75 @@ import AsyncStorage from '@react-native-community/async-storage';
 import {AnimatedFlatList, AnimationType} from 'flatlist-intro-animations';
 import {bindActionCreators} from 'redux';
 import {connect} from 'react-redux';
-
+import colors from './../../assets/colors/colors';
+import AntDesign from 'react-native-vector-icons/AntDesign';
+import {Avatar, Button} from 'react-native-paper';
+import {SearchableFlatList} from 'react-native-searchable-list';
 class Donarscreen extends Component {
   state = {
-    data: [
-      {
-        name: 'Umer',
-        fName: 'Irfan',
-        dob: '17-08-1999',
-        city: 'Sargodha',
-      },
-      {
-        name: 'Umers',
-        fName: 'Irfan',
-        dob: '17-08-1999',
-        city: 'Sargodha',
-      },
-      {
-        name: 'Umes',
-        fName: 'Irfan',
-        dob: '17-08-1999',
-        city: 'Sargodha',
-      },
-      {
-        name: 'Uers',
-        fName: 'Irfan',
-        dob: '17-08-1999',
-        city: 'Sargodha',
-      },
-      {
-        name: 'Urs',
-        fName: 'Irfan',
-        dob: '17-08-1999',
-        city: 'Sargodha',
-      },
-    ],
+    searchTerm: '',
+    data: this.props.donorList,
   };
+  constructor(props) {
+    super(props);
+    this.arrayholder = this.props.donorList;
+  }
   RenderItem = (item) => (
     <View style={styles.flatlistContainer}>
       <View style={styles.flatlistItem}>
         <View style={styles.leftContainer}>
-          {/* img */}
-          <View style={styles.imgcontainer}></View>
+          <Avatar.Text
+            size={64}
+            color={colors.white}
+            label={item.blood_group}
+            style={{backgroundColor: colors.primary}}
+            labelStyle={{
+              fontFamily: 'HelveticaNowDisplay-Regular',
+              fontSize: 32,
+            }}
+          />
         </View>
         <View style={styles.RightContainer}>
-          <Text style={styles.nametxt}>NAME</Text>
-
-          <View style={styles.noConatiner}>
-            <Text style={styles.notxt}>Ask for Help?</Text>
-          </View>
+          <Text style={styles.nametxt}>{item.full_name}</Text>
+          <Text style={styles.gendertxt}>{item.sex}</Text>
+          <Text style={styles.addresstxt}>{item.mobile}</Text>
+          <Text style={styles.addresstxt}>{item.district}</Text>
         </View>
         <View style={styles.LastContainer}>
-          <View style={styles.circlebLood}>
-            <Text style={styles.circelTxt}>A+</Text>
-          </View>
+          <TouchableOpacity style={{elevation: 5}}>
+            <AntDesign name="phone" color={colors.acceptGreen} size={26} />
+            <Text style={styles.labelText}>Call</Text>
+          </TouchableOpacity>
+          <View style={styles.frespace}></View>
+          <TouchableOpacity style={{elevation: 5}}>
+            <AntDesign name="notification" color={colors.primary} size={26} />
+            <Text style={styles.labelText}>Request</Text>
+          </TouchableOpacity>
         </View>
       </View>
     </View>
   );
+
+  updateSearch = (search) => {
+    this.setState({search});
+  };
+  searchFilterFunction = (text) => {
+    this.setState({
+      value: text,
+    });
+
+    const newData = this.arrayholder.filter((item) => {
+      const itemData = `${item.full_name.toUpperCase()} ${item.blood_group.toUpperCase()} ${item.district.toUpperCase()}`;
+
+      // const itemData = `${item.name.title.toUpperCase()} ${item.name.first.toUpperCase()} ${item.name.last.toUpperCase()}`;
+      const textData = text.toUpperCase();
+
+      return itemData.indexOf(textData) > -1;
+    });
+    this.setState({
+      data: newData,
+    });
+  };
 
   render() {
     return (
@@ -89,6 +103,28 @@ class Donarscreen extends Component {
             title={'Donar List'}
             onPress={() => this.props.navigation.goBack()}
           />
+          <SearchBar
+            placeholder="Search by Name, District, Blood Group..."
+            onChangeText={(text) => this.searchFilterFunction(text)}
+            value={this.state.value}
+            clearIcon
+            inputStyle={{
+              backgroundColor: colors.white,
+              fontFamily: 'HelveticaNowDisplay-Regular',
+              fontSize: 14,
+              borderColor: colors.white,
+            }}
+            inputContainerStyle={{
+              backgroundColor: colors.white,
+              borderColor: colors.white,
+            }}
+            lightTheme
+            containerStyle={{
+              backgroundColor: colors.white,
+              borderColor: colors.white,
+              borderWidth: 0,
+            }}
+          />
           <View style={styles.flatlistContainerView}>
             <AnimatedFlatList
               contentContainerStyle={{
@@ -96,7 +132,7 @@ class Donarscreen extends Component {
               }}
               data={this.state.data}
               renderItem={({item}) => this.RenderItem(item)}
-              animationType={AnimationType.Dive}
+              animationType={AnimationType.SlideFromRight}
               keyExtractor={(item) => item.name}
               animationDuration={1000}
               focused={true}
@@ -109,7 +145,9 @@ class Donarscreen extends Component {
   }
 }
 const mapStateToProps = (state) => {
-  return {};
+  return {
+    donorList: state.dataReducer.donorList,
+  };
 };
 
 function mapDispatchToProps(dispatch) {
@@ -135,11 +173,16 @@ const styles = StyleSheet.create({
   },
   flatlistContainer: {
     alignItems: 'center',
-    marginTop: h('4%'),
+    marginTop: h('2%'),
+    elevation: 5,
+  },
+  labelText: {
+    fontFamily: 'HelveticaNowDisplay-Regular',
+    fontSize: 10,
   },
   flatlistContainerView: {
     backgroundColor: '#E6DDDD',
-    height: '100%',
+    height: '90%',
   },
   leftContainer: {
     // backgroundColor: '#000',
@@ -150,8 +193,11 @@ const styles = StyleSheet.create({
   },
   RightContainer: {
     // backgroundColor: 'red',
-    width: '40%',
+    width: '50%',
     height: '100%',
+    padding: h('2%'),
+    justifyContent: 'center',
+    alignContent: 'center',
   },
   imgcontainer: {
     backgroundColor: '#ea5455',
@@ -161,30 +207,44 @@ const styles = StyleSheet.create({
   },
   LastContainer: {
     // backgroundColor: 'yellow',
-    width: '30%',
-    alignItems: 'flex-end',
+    width: '20%',
+    marginEnd: h('2%'),
+    alignContent: 'center',
+    justifyContent: 'center',
   },
   nametxt: {
-    color: 'black',
-    fontSize: h('2%'),
-    marginTop: h('7%'),
+    color: colors.black,
+    fontSize: h('1.6%'),
+    marginTop: h('0.5%'),
+    fontFamily: 'HelveticaNowDisplay-Bold',
+  },
+  gendertxt: {
+    color: colors.primary,
+    fontSize: h('1.8%'),
+    // marginTop: h('1%'),
+    fontFamily: 'HelveticaNowDisplay-Bold',
   },
   addresstxt: {
-    color: 'silver',
-    fontSize: h('2%'),
+    color: 'gray',
+    fontSize: h('1.8%'),
     // marginTop: h('1%'),
+    fontFamily: 'HelveticaNowDisplay-Regular',
+  },
+  notxt: {
+    color: colors.primary,
+    fontSize: h('1.2%'),
+    fontFamily: 'HelveticaNowDisplay-Bold',
   },
   noConatiner: {
-    // backgroundColor: 'red',
+    backgroundColor: colors.white,
     width: '80%',
     height: '25%',
     justifyContent: 'center',
     alignItems: 'center',
-    borderRadius: h('10%'),
-    marginTop: h('3%'),
+    borderRadius: h('1%'),
+    marginTop: h('2%'),
     borderColor: '#ea5455',
-    borderWidth: 1,
-    marginLeft: h('4%'),
+    elevation: 5,
   },
   requestContainr: {
     backgroundColor: '#FF215D',
@@ -194,25 +254,25 @@ const styles = StyleSheet.create({
     paddingLeft: h('2%'),
     // borderRadius: h('10%'),
     marginTop: h('3%'),
-
     borderTopLeftRadius: h('10%'),
     borderBottomLeftRadius: h('10%'),
   },
   circlebLood: {
-    width: '50%',
-    height: '42%',
+    width: '55%',
+    height: '40%',
     borderRadius: h('10%'),
     // backgroundColor: 'red',
-    marginTop: h('5%'),
     marginRight: h('3%'),
     borderColor: 'silver',
-    borderWidth: 1,
+    borderWidth: 2,
     justifyContent: 'center',
     alignItems: 'center',
+    flexDirection: 'row-reverse',
   },
   circelTxt: {
     color: '#FF215D',
-    fontSize: h('2.5%'),
+    fontSize: h('3%'),
+    fontFamily: 'HelveticaNowDisplay-Regular',
   },
   requestTxt: {
     color: '#Ffff',
@@ -221,7 +281,7 @@ const styles = StyleSheet.create({
   frespace: {
     // backgroundColor: 'white',
     width: '100%',
-    height: h('5%'),
+    height: h('3%'),
     // marginTop: -h('50%'),
   },
 });

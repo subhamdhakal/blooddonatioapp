@@ -19,17 +19,16 @@ import {bindActionCreators} from 'redux';
 import {connect} from 'react-redux';
 import loginReducer from '../../reducers/loginReducer';
 import {fetchdonorlistandbloodrequest} from './../../actions/fetchdata';
+import colors from './../../assets/colors/colors';
+import {configureNotification} from './../../utils/NotificationConfigure';
+import PushNotification from 'react-native-push-notification';
 
 class Dashboard extends Component {
-  state = {
-    images: [
-      'https://source.unsplash.com/1024x768/?nature',
-      'https://source.unsplash.com/1024x768/?water',
-      'https://source.unsplash.com/1024x768/?girl',
-      'https://source.unsplash.com/1024x768/?tree', // Network image
-    ],
-  };
-  componentDidMount() {
+  state = {};
+  async componentDidMount() {
+    configureNotification();
+    PushNotification.subscribeToTopic('call');
+
     this.props.actions.fetchdonorlistandbloodrequest({
       accessToken: this.props.access_token,
 
@@ -52,6 +51,20 @@ class Dashboard extends Component {
         style={styles.Container}
         source={require('../../assets/dash.png')}>
         <View style={styles.logo}>
+          {/* <View
+            style={{
+              backgroundColor: colors.white,
+              width: '100%',
+              alignItems: 'center',
+              padding: 8,
+            }}>
+            <Text
+              style={{
+                fontFamily: 'HelveticaNowDisplay-ExtraBold',
+                color: colors.primary,
+                fontSize: h('2%'),
+              }}></Text>
+          </View> */}
           <SliderBox autoplay circleLoop images={this.props.sliderImages} />
         </View>
         <View style={styles.topview}>
@@ -60,7 +73,7 @@ class Dashboard extends Component {
               <Text style={styles.numbertxt}>
                 {this.props.total_count['donor_count']}
               </Text>
-              <Text style={styles.donartxt}>Donar's</Text>
+              <Text style={styles.donartxt}>Donor's</Text>
             </View>
             <View style={styles.rightContianer}>
               <TouchableOpacity
@@ -68,7 +81,7 @@ class Dashboard extends Component {
                   this.props.navigation.navigate('Donarscreen');
                 }}
                 style={styles.btn}>
-                <Text style={styles.btntxt}>Find Donar</Text>
+                <Text style={styles.btntxt}>Find Donor</Text>
               </TouchableOpacity>
             </View>
           </View>
@@ -85,7 +98,7 @@ class Dashboard extends Component {
                   this.props.navigation.navigate('CheckRequest');
                 }}
                 style={styles.btn}>
-                <Text style={styles.btntxt}>See Request</Text>
+                <Text style={styles.btntxt}>Check Request</Text>
               </TouchableOpacity>
             </View>
           </View>
@@ -184,7 +197,7 @@ const styles = StyleSheet.create({
   logo: {
     // backgroundColor: 'yellow',
     width: '100%',
-    height: h('35%'),
+    height: h('30%'),
     alignItems: 'center',
   },
   btxt: {

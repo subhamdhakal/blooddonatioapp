@@ -7,6 +7,7 @@ import AntDesign from 'react-native-vector-icons/AntDesign';
 import Dashboard from '../screens/dasboard/Dashboard';
 import MyRequest from '../screens/request/MyRequest';
 import ProfileScreen from '../screens/profile/ProfileScreen';
+import EventScreen from './../screens/event/EventScreen';
 
 export class BottomTab extends Component {
   render() {
@@ -33,7 +34,17 @@ export class BottomTab extends Component {
           options={{
             tabBarLabel: 'My Request',
             tabBarIcon: ({color}) => (
-              <AntDesign name="staro" color={color} size={26} />
+              <AntDesign name="mail" color={color} size={26} />
+            ),
+          }}
+        />
+        <Tab.Screen
+          name="Events"
+          component={EventScreen}
+          options={{
+            tabBarLabel: 'Events',
+            tabBarIcon: ({color}) => (
+              <AntDesign name="notification" color={color} size={26} />
             ),
           }}
         />

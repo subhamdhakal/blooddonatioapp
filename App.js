@@ -12,7 +12,6 @@ const App = () => {
     <Provider store={store}>
       <PersistGate loading={null} persistor={persistor}>
         <StatusBar backgroundColor={colors.primary} />
-
         <StackNavigator />
       </PersistGate>
     </Provider>

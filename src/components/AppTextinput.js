@@ -18,6 +18,7 @@ export class AppTextinput extends Component {
           editable={this.props.editable}
           defaultValue={this.props.defaultValue}
           autoFocus={this.props.autoFocus}
+          keyboardType={this.props.keyboardType}
         />
       </View>
     );

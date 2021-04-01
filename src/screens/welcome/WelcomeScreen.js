@@ -12,6 +12,7 @@ import {
   heightPercentageToDP as h,
 } from 'react-native-responsive-screen';
 import {AppButton, NavHeader, AppTextinput} from '../../components';
+import colors from './../../assets/colors/colors';
 
 export class WelcomeScreen extends Component {
   render() {
@@ -93,9 +94,9 @@ const styles = StyleSheet.create({
     height: h('40%'),
   },
   txt: {
-    color: 'black',
-    fontSize: h('3.5%'),
-    fontFamily: 'HelveticaNowDisplay-Regular',
+    color: colors.primary,
+    fontSize: h('2.5%'),
+    fontFamily: 'HelveticaNowDisplay-Bold',
   },
   midleContainer: {
     // backgroundColor: 'tomato',
@@ -132,7 +133,7 @@ const styles = StyleSheet.create({
     fontFamily: 'HelveticaNowDisplay-Regular',
   },
   txtc: {
-    color: 'tomato',
-    fontFamily: 'HelveticaNowDisplay-Regular',
+    color: colors.primary,
+    fontFamily: 'HelveticaNowDisplay-Bold',
   },
 });
