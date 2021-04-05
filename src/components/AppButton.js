@@ -44,7 +44,7 @@ const styles = StyleSheet.create({
   },
   btntxt: {
     color: 'white',
-    fontSize: h('2.5%'),
+    fontSize: h('2%'),
     fontFamily: 'HelveticaNowDisplay-Bold',
   },
 });

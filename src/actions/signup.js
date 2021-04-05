@@ -22,3 +22,27 @@ export const signup = ({signUpDetails, onSuccess, onFailure}) => {
       });
   };
 };
+
+export const changepasword = ({
+  accessToken,
+  passwordDetails,
+  onSuccess,
+  onFailure,
+}) => {
+  return (dispatch) => {
+    console.log(JSON.stringify(passwordDetails));
+    return axios
+      .post(BASE_URL + 'api/v1/change-password', passwordDetails, {
+        headers: {
+          Authorization: `Bearer ${accessToken}`,
+        },
+      })
+      .then((res) => {
+        console.log(res);
+        onSuccess();
+      })
+      .catch((error) => {
+        onFailure(error.response.data.error);
+      });
+  };
+};

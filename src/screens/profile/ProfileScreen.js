@@ -62,7 +62,7 @@ export class ProfileScreen extends Component {
             <View style={styles.right}>
               <TouchableOpacity
                 onPress={() => {
-                  this.props.navigation.navigate('AddRequest');
+                  this.props.navigation.navigate('EditProfile');
                 }}
                 style={styles.btn}>
                 <AntDesign name="edit" color={'#ea5455'} size={20} />
@@ -104,6 +104,10 @@ export class ProfileScreen extends Component {
               alignItems: 'center',
               marginTop: h('4%'),
             }}>
+            <AppButton
+              title={'Change Password'}
+              onPress={() => this.props.navigation.navigate('ChangePassword')}
+            />
             <AppButton
               title={'Log Out'}
               onPress={() => this.props.navigation.navigate('WelcomeScreen')}
@@ -184,9 +188,9 @@ const styles = StyleSheet.create({
   },
   btntxt: {
     color: '#ea5455',
-    fontSize: h('2%'),
+    fontSize: h('1.8%'),
     marginLeft: h('1%'),
-    fontFamily: 'HelveticaNowDisplay-Bold',
+    fontFamily: 'HelveticaNowDisplay-ExtraBold',
   },
   no: {
     color: 'white',

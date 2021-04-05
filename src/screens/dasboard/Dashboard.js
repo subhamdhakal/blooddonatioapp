@@ -24,10 +24,20 @@ import {configureNotification} from './../../utils/NotificationConfigure';
 import PushNotification from 'react-native-push-notification';
 
 class Dashboard extends Component {
-  state = {};
+  state = {
+    blood_group_notification: this.props.blood_group_notification,
+  };
+
+  constructor(props) {
+    super(props);
+  }
   async componentDidMount() {
     configureNotification();
-    PushNotification.subscribeToTopic('call');
+    console.log(
+      'blood_group_notification' + this.props.blood_group_notification,
+    );
+    PushNotification.subscribeToTopic('events');
+    PushNotification.subscribeToTopic(this.props.blood_group_notification);
 
     this.props.actions.fetchdonorlistandbloodrequest({
       accessToken: this.props.access_token,
@@ -113,6 +123,8 @@ const mapStateToProps = (state) => {
     sliderImages: state.loginReducer.loginResponse['event_images'],
     access_token: state.loginReducer.loginResponse['token'],
     total_count: state.loginReducer.loginResponse['total_count'],
+    blood_group_notification:
+      state.loginReducer.loginResponse['blood_group_notification'],
   };
 };
 
@@ -190,9 +202,9 @@ const styles = StyleSheet.create({
   },
   btntxt: {
     color: '#ea5455',
-    fontSize: h('2%'),
+    fontSize: h('1.8%'),
     marginLeft: h('1%'),
-    fontFamily: 'HelveticaNowDisplay-Medium',
+    fontFamily: 'HelveticaNowDisplay-ExtraBold',
   },
   logo: {
     // backgroundColor: 'yellow',

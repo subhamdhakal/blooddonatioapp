@@ -17,6 +17,9 @@ import AddRequest from '../screens/addrequest/AddRequest';
 import {BottomTab} from './BottomTab';
 import Signin from './../screens/signin/Signin';
 import Signup from './../screens/signup/Signup';
+import SendPersonalRequest from '../screens/request/SendPersonalRequest';
+import EditProfile from '../screens/profile/EditProfile';
+import ChangePassword from './../screens/profile/ChangePassword';
 
 export class StackNavigator extends Component {
   render() {
@@ -71,6 +74,16 @@ export class StackNavigator extends Component {
           <Stack.Screen
             name="AddRequest"
             component={AddRequest}
+            options={{headerShown: false}}
+          />
+          <Stack.Screen
+            name="EditProfile"
+            component={EditProfile}
+            options={{headerShown: false}}
+          />
+          <Stack.Screen
+            name="ChangePassword"
+            component={ChangePassword}
             options={{headerShown: false}}
           />
         </Stack.Navigator>

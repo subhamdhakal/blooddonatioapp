@@ -8,6 +8,7 @@ import {
   Image,
   ImageBackground,
   TouchableOpacity,
+  Alert,
 } from 'react-native';
 import {
   widthPercentageToDP as w,
@@ -50,55 +51,108 @@ export class MyRequest extends Component {
         <View style={styles.leftContainer}>
           {/* img */}
           <Avatar.Text
-            size={64}
+            size={48}
             color={colors.white}
             label={item.blood_group}
             style={{backgroundColor: colors.primary}}
             labelStyle={{
-              fontSize: 32,
+              fontSize: 24,
             }}
           />
         </View>
         <View style={styles.RightContainer}>
           <Text
             style={{
-              fontFamily: 'HelveticaNowDisplay-Bold',
+              fontFamily: 'HelveticaNowDisplay-Regular',
+              fontSize: 12,
             }}>
-            {'Requested Date: ' + item.created_date}
+            {'Date: ' + item.created_date}
+          </Text>
+          <Text
+            style={{
+              fontFamily: 'HelveticaNowDisplay-Regular',
+              fontSize: 12,
+            }}>
+            {'Address: ' + item.address}
+          </Text>
+          <Text
+            style={{
+              fontFamily: 'HelveticaNowDisplay-Regular',
+              fontSize: 12,
+            }}>
+            {'Phone: ' + item.phone_no}
           </Text>
           <View
             style={{
               flexWrap: 'wrap',
-              alignContent: 'flex-end',
               alignItems: 'flex-end',
-            }}>
-            <TouchableOpacity
-              style={{
-                backgroundColor: colors.primary,
-                padding: 8,
-                borderRadius: 24,
-                elevation: 5,
-                marginTop: 12,
-              }}>
-              <Text
-                style={{
-                  color: colors.white,
-                  fontSize: 12,
-                  fontFamily: 'HelveticaNowDisplay-Bold',
-                }}>
-                Delete
-              </Text>
-            </TouchableOpacity>
-          </View>
+            }}></View>
         </View>
         <View style={styles.LastContainer}>
           <View style={styles.requestContainr}>
             <Text style={styles.requestTxt}>Requested</Text>
           </View>
+          <View
+            style={{
+              flexDirection: 'row',
+              alignContent: 'space-around',
+              margin: 12,
+              justifyContent: 'space-between',
+              alignItems: 'stretch',
+              alignSelf: 'stretch',
+            }}>
+            <TouchableOpacity
+              style={{elevation: 5}}
+              onPress={() => this.deleteRequest(item)}>
+              <AntDesign name="delete" color={colors.primary} size={24} />
+              <Text style={styles.labelText}>Delete</Text>
+            </TouchableOpacity>
+            <TouchableOpacity
+              style={{
+                elevation: 5,
+                alignItems: 'center',
+                alignContent: 'center',
+                justifyContent: 'center',
+              }}
+              onPress={() => this.completeRequest(item)}>
+              <AntDesign name="check" color={colors.acceptGreen} size={24} />
+              <Text style={styles.labelText}>Complete</Text>
+            </TouchableOpacity>
+          </View>
         </View>
       </View>
     </View>
   );
+
+  deleteRequest = (item) => {
+    Alert.alert(
+      'Delete Blood Request',
+      'Are you sure you want to delete this request ?',
+      [
+        {
+          text: 'Cancel',
+          onPress: () => console.log('Cancel Pressed'),
+          style: 'cancel',
+        },
+        {text: 'Yes', onPress: () => console.log('Make request')},
+      ],
+    );
+  };
+
+  completeRequest = (item) => {
+    Alert.alert(
+      'Complete Blood Request',
+      'Are you sure you want to complete this request ? ',
+      [
+        {
+          text: 'Cancel',
+          onPress: () => console.log('Cancel Pressed'),
+          style: 'cancel',
+        },
+        {text: 'Yes', onPress: () => console.log('Make request')},
+      ],
+    );
+  };
 
   render() {
     return (
@@ -135,8 +189,6 @@ export class MyRequest extends Component {
             animationDuration={1000}
             focused={true}
           />
-
-          <View style={styles.frespace}></View>
         </View>
       </View>
     );
@@ -212,9 +264,9 @@ const styles = StyleSheet.create({
   },
   btntxt: {
     color: '#ea5455',
-    fontSize: h('2%'),
+    fontSize: h('1.8%'),
     marginLeft: h('1%'),
-    fontFamily: 'HelveticaNowDisplay-Bold',
+    fontFamily: 'HelveticaNowDisplay-ExtraBold',
   },
   no: {
     color: 'white',
@@ -245,14 +297,14 @@ const styles = StyleSheet.create({
   },
   leftContainer: {
     // backgroundColor: '#000',
-    width: '30%',
+    width: '20%',
     height: '100%',
     alignItems: 'center',
     justifyContent: 'center',
   },
   RightContainer: {
     // backgroundColor: 'red',
-    width: '40%',
+    width: '50%',
     height: '100%',
     justifyContent: 'center',
   },
@@ -263,7 +315,6 @@ const styles = StyleSheet.create({
     height: '70%',
   },
   LastContainer: {
-    // backgroundColor: 'yellow',
     width: '30%',
     alignItems: 'flex-end',
   },
@@ -329,5 +380,11 @@ const styles = StyleSheet.create({
     width: '100%',
     height: h('35.1%'),
     // marginTop: -h('50%'),
+  },
+  labelText: {
+    fontFamily: 'HelveticaNowDisplay-Regular',
+    fontSize: 10,
+    alignSelf: 'center',
+    alignItems: 'center',
   },
 });

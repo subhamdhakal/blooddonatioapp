@@ -13,6 +13,7 @@ import {
   TextInput,
 } from 'react-native';
 import {SearchBar} from 'react-native-elements';
+import call from 'react-native-phone-call';
 
 import {
   widthPercentageToDP as w,
@@ -43,24 +44,26 @@ class CheckRequest extends Component {
       <View style={styles.flatlistItem}>
         <View style={styles.leftContainer}>
           <Avatar.Text
-            size={64}
+            size={48}
             color={colors.white}
             label={item.blood_group}
             style={{backgroundColor: colors.primary}}
             labelStyle={{
               fontFamily: 'HelveticaNowDisplay-Regular',
-              fontSize: 32,
+              fontSize: 24,
             }}
           />
         </View>
         <View style={styles.RightContainer}>
           <Text style={styles.nametxt}>{item.full_name}</Text>
-          <Text style={styles.gendertxt}>{item.sex}</Text>
-          <Text style={styles.addresstxt}>{item.mobile}</Text>
-          <Text style={styles.addresstxt}>{item.district}</Text>
+          <Text style={styles.gendertxt}>{item.created_date}</Text>
+          <Text style={styles.addresstxt}>{item.address}</Text>
+          <Text style={styles.addresstxt}>{item.phone_no}</Text>
         </View>
         <View style={styles.LastContainer}>
-          <TouchableOpacity style={{elevation: 5}}>
+          <TouchableOpacity
+            style={{elevation: 5}}
+            onPress={() => this.makePhoneCall(item.mobile)}>
             <AntDesign name="phone" color={colors.acceptGreen} size={26} />
             <Text style={styles.labelText}>Call</Text>
           </TouchableOpacity>
@@ -68,6 +71,23 @@ class CheckRequest extends Component {
       </View>
     </View>
   );
+  makePhoneCall = (phoneNumber) => {
+    try {
+      if (phoneNumber.length != 10) {
+        alert('Invalid phone number');
+        return;
+      }
+    } catch (err) {
+      alert('Invalid phone number');
+    }
+
+    const args = {
+      number: phoneNumber,
+      prompt: true,
+    };
+    // Make a call
+    call(args).catch(console.error);
+  };
 
   updateSearch = (search) => {
     this.setState({search});
@@ -92,50 +112,47 @@ class CheckRequest extends Component {
 
   render() {
     return (
-      <ScrollView>
-        <View style={styles.Container}>
-          <NavHeader
-            title={'Donar List'}
-            onPress={() => this.props.navigation.goBack()}
+      <View style={styles.Container}>
+        <NavHeader
+          title={'Donar List'}
+          onPress={() => this.props.navigation.goBack()}
+        />
+        <SearchBar
+          placeholder="Search by Name, District, Blood Group..."
+          onChangeText={(text) => this.searchFilterFunction(text)}
+          value={this.state.value}
+          clearIcon
+          inputStyle={{
+            backgroundColor: colors.white,
+            fontFamily: 'HelveticaNowDisplay-Regular',
+            fontSize: 14,
+            borderColor: colors.white,
+          }}
+          inputContainerStyle={{
+            backgroundColor: colors.white,
+            borderColor: colors.white,
+          }}
+          lightTheme
+          containerStyle={{
+            backgroundColor: colors.white,
+            borderColor: colors.white,
+            borderWidth: 0,
+          }}
+        />
+        <View style={styles.flatlistContainerView}>
+          <AnimatedFlatList
+            contentContainerStyle={{
+              marginTop: -h('1%'),
+            }}
+            data={this.state.data}
+            renderItem={({item}) => this.RenderItem(item)}
+            animationType={AnimationType.SlideFromRight}
+            keyExtractor={(item) => item.full_name}
+            animationDuration={1000}
+            focused={true}
           />
-          <SearchBar
-            placeholder="Search by Name, District, Blood Group..."
-            onChangeText={(text) => this.searchFilterFunction(text)}
-            value={this.state.value}
-            clearIcon
-            inputStyle={{
-              backgroundColor: colors.white,
-              fontFamily: 'HelveticaNowDisplay-Regular',
-              fontSize: 14,
-              borderColor: colors.white,
-            }}
-            inputContainerStyle={{
-              backgroundColor: colors.white,
-              borderColor: colors.white,
-            }}
-            lightTheme
-            containerStyle={{
-              backgroundColor: colors.white,
-              borderColor: colors.white,
-              borderWidth: 0,
-            }}
-          />
-          <View style={styles.flatlistContainerView}>
-            <AnimatedFlatList
-              contentContainerStyle={{
-                marginTop: -h('1%'),
-              }}
-              data={this.state.data}
-              renderItem={({item}) => this.RenderItem(item)}
-              animationType={AnimationType.SlideFromRight}
-              keyExtractor={(item) => item.name}
-              animationDuration={1000}
-              focused={true}
-            />
-            <View style={styles.frespace}></View>
-          </View>
         </View>
-      </ScrollView>
+      </View>
     );
   }
 }
@@ -161,7 +178,7 @@ const styles = StyleSheet.create({
   flatlistItem: {
     backgroundColor: '#fff',
     width: '90%',
-    height: h('19%'),
+    height: h('15%'),
     justifyContent: 'center',
     flexDirection: 'row',
     borderRadius: h('1%'),
@@ -181,7 +198,7 @@ const styles = StyleSheet.create({
   },
   leftContainer: {
     // backgroundColor: '#000',
-    width: '30%',
+    width: '20%',
     height: '100%',
     alignItems: 'center',
     justifyContent: 'center',
@@ -203,9 +220,10 @@ const styles = StyleSheet.create({
   LastContainer: {
     // backgroundColor: 'yellow',
     width: '20%',
-    marginEnd: h('2%'),
-    alignContent: 'center',
+    alignContent: 'flex-end',
     justifyContent: 'center',
+    alignItems: 'flex-end',
+    marginEnd: h('1.8'),
   },
   nametxt: {
     color: colors.black,

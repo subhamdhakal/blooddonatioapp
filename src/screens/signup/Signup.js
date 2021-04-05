@@ -31,6 +31,7 @@ import {signup} from './../../actions/signup';
 import RNModalPicker from './../../components/RNModalPicker';
 import {DISTRICT_LIST} from './../../constants/app-constants';
 import colors from '../../assets/colors/colors';
+import LabelText from './../../components/LabelText';
 
 class Signup extends Component {
   state = {
@@ -42,12 +43,14 @@ class Signup extends Component {
     gender: '',
     blood: '',
     showDatePicker: false,
+    showLastDonatedDatePicker: false,
     dateofbirth: '',
     disease: '',
     district: '',
     location: '',
     role: '',
     loading: false,
+    last_blood_donated: '',
   };
   constructor(props) {
     super(props);
@@ -119,6 +122,7 @@ class Signup extends Component {
                             district: this.state.district,
                             location: this.state.location,
                             date_of_birth: this.state.dateofbirth,
+                            last_blood_donated: this.state.last_blood_donated,
                           };
                           this.toggleLogin(true);
 
@@ -170,11 +174,7 @@ class Signup extends Component {
       alert('email is incorect');
     }
   };
-  onDateChanged = (event, selectedDate) => {
-    this.setState({
-      selectedDate: selectedDate,
-    });
-  };
+
   setDate = (event, date) => {
     if (date !== undefined) {
       // timeSetAction
@@ -182,6 +182,17 @@ class Signup extends Component {
       this.setState({
         dateofbirth: moment(date).format('YYYY-MM-DD').toString(),
         showDatePicker: false,
+      });
+    }
+  };
+
+  setLastDonatedDate = (event, date) => {
+    if (date !== undefined) {
+      // timeSetAction
+      console.log('last donated date' + date);
+      this.setState({
+        last_blood_donated: moment(date).format('YYYY-MM-DD').toString(),
+        showLastDonatedDatePicker: false,
       });
     }
   };
@@ -196,6 +207,7 @@ class Signup extends Component {
 
   render() {
     const date = new Date();
+    const lastDonated = new Date();
 
     return (
       <View style={styles.Container}>
@@ -252,6 +264,7 @@ class Signup extends Component {
                       mode={'date'}
                       is24Hour={false}
                       display="spinner"
+                      maximumDate={date}
                       onChange={this.setDate}
                       // onChange={this.setState({
                       //   selectedDate:,
@@ -294,6 +307,41 @@ class Signup extends Component {
                   }
                 />
               </View>
+              <TouchableOpacity
+                onPress={() =>
+                  this.setState({
+                    showLastDonatedDatePicker: true,
+                  })
+                }>
+                <LabelText
+                  label={'Select if you have donated blood in last 100 days'}
+                />
+
+                <AppTextinput
+                  name={'Last Blood Donated Date'}
+                  onChangeText={(lastblooddonated) =>
+                    this.setState({last_blood_donated: lastblooddonated})
+                  }
+                  editable={false}
+                  defaultValue={this.state.last_blood_donated}
+                />
+                <View>
+                  {this.state.showLastDonatedDatePicker && (
+                    <DateTimePicker
+                      testID="datePickerLastDonated"
+                      value={lastDonated}
+                      mode={'date'}
+                      is24Hour={false}
+                      display="spinner"
+                      maximumDate={date}
+                      onChange={this.setLastDonatedDate}
+                      // onChange={this.setState({
+                      //   selectedDate:,
+                      // })}
+                    />
+                  )}
+                </View>
+              </TouchableOpacity>
             </View>
           </View>
           <View style={styles.midContainer}>
@@ -734,7 +782,7 @@ const styles = StyleSheet.create({
   topContainer: {
     // backgroundColor: 'red',
     width: '100%',
-    height: h('80%'),
+    height: h('90%'),
   },
   midContainer: {
     // backgroundColor: 'yellow',

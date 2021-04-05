@@ -16,17 +16,19 @@ import Geocoder from 'react-native-geocoding';
 import {connect} from 'react-redux';
 import colors from './../../assets/colors/colors';
 import {AntDesign} from 'react-native-vector-icons/AntDesign';
+import {requestblood} from './../../actions/bloodrequest';
+import AnimatedLoader from 'react-native-animated-loader';
+import PushNotification from 'react-native-push-notification';
+
 class AddRequest extends Component {
   state = {
     blood: '',
     latitude: '',
     longitude: '',
-    address: 'Fetching...',
+    address: this.props.userData['user']['address'],
     loading: false,
-    email: '',
-    phone_no: '',
-    latitude: '',
-    longitude: '',
+    email: this.props.userData['user']['email'],
+    phone_no: this.props.userData['user']['phone'],
   };
   toggleLoading(value) {
     this.setState({
@@ -40,7 +42,7 @@ class AddRequest extends Component {
     })
       .then((location) => {
         console.log(location);
-        Geocoder.init('AIzaSyCp_eYV5VpunCIETQwG6SECfCsDOllLvqk'); // use a valid API key
+        Geocoder.init('AIzaSyC_GdHrPH8BgAvnlW2yNMuVNuJGMZTEHl0'); // use a valid API key
         Geocoder.from(location.latitude, location.longitude)
           .then((json) => {
             var addressComponent = json.results[0].address_components[0];
@@ -59,35 +61,46 @@ class AddRequest extends Component {
       });
   }
   getRequestLocation() {}
+  toggleLogin(value) {
+    this.setState({
+      loading: value,
+    });
+  }
 
   validateAndPost() {
     if (this.state.blood != '') {
-      const value = {
-        email: 'blooddonate+239@gmail.com',
-        phone_no: '9849210248',
-        address: 'tt',
-        blood_group: 'O+',
-        status: 'PENDING',
-        created_date: '2020-12-01',
-        latitude: '27.75791000',
-        longitude: '85.30256721',
-      };
-      this.toggleLogin(true);
+      if (this.state.phone_no != '') {
+        const value = {
+          email: this.state.email,
+          phone_no: this.state.phone_no,
+          address: this.state.address,
+          blood_group: this.state.blood,
+          status: 'PENDING',
+          latitude: this.state.latitude,
+          longitude: this.state.longitude,
+        };
+        this.toggleLogin(true);
 
-      this.props.actions.signup({
-        bloodRequestValue: value,
+        this.props.actions.requestblood({
+          accessToken: this.props.access_token,
+          value: value,
 
-        onSuccess: () => {
-          this.toggleLogin(false);
-          this.props.navigation.replace('BottomTab');
-        },
-        onFailure: (errorMsg) => {
-          this.toggleLogin(false);
-          alert(errorMsg);
+          onSuccess: (bloodrequestid) => {
+            PushNotification.subscribeToTopic(bloodrequestid);
+            this.props.navigation.replace('BottomTab');
+            alert('Blood request posted successfully!');
+            this.toggleLogin(false);
+          },
+          onFailure: (errorMsg) => {
+            this.toggleLogin(false);
+            alert(errorMsg);
 
-          //Alert error message
-        },
-      });
+            //Alert error message
+          },
+        });
+      } else {
+        alert('Please enter phone number');
+      }
     } else {
       alert('Please select blood group');
     }
@@ -99,19 +112,28 @@ class AddRequest extends Component {
           onPress={() => this.props.navigation.goBack()}
           title={'Add Request'}
         />
+        <AnimatedLoader
+          visible={this.state.loading}
+          overlayColor="rgba(255,255,255,0.75)"
+          source={require('../../assets/loader.json')}
+          animationStyle={styles.lottie}
+          speed={1}></AnimatedLoader>
         <Text style={styles.detail}>Details</Text>
         <View style={styles.ContainerView}>
           <AppTextinput
             name={'Email'}
-            defaultValue={this.props.userData['user']['email']}
+            defaultValue={this.state.email}
+            onChangeText={(email) => this.setState({email: email})}
           />
           <AppTextinput
             name={'Phone No'}
-            defaultValue={this.props.userData['user']['mobile']}
+            defaultValue={this.state.phone_no}
+            onChangeText={(phoneno) => this.setState({phone_no: phoneno})}
           />
           <AppTextinput
             name={'Address'}
-            defaultValue={this.props.userData['user']['location']}
+            defaultValue={this.state.address}
+            onChangeText={(address) => this.setState({address: address})}
           />
         </View>
 
@@ -301,9 +323,9 @@ class AddRequest extends Component {
         <View style={{alignItems: 'center'}}>
           {/* <AntDesign name="appstore1" color={colors.primary} size={26} /> */}
 
-          <Text style={styles.txtl}>
+          {/* <Text style={styles.txtl}>
             {'Current Location: ' + this.state.address}
-          </Text>
+          </Text> */}
         </View>
         <View style={styles.btn}>
           <AppButton
@@ -323,12 +345,13 @@ class AddRequest extends Component {
 const mapStateToProps = (state) => {
   return {
     userData: state.loginReducer.loginResponse,
+    access_token: state.loginReducer.loginResponse['token'],
   };
 };
 
 function mapDispatchToProps(dispatch) {
   return {
-    actions: bindActionCreators({}, dispatch),
+    actions: bindActionCreators({requestblood}, dispatch),
   };
 }
 

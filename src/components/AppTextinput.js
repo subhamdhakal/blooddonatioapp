@@ -19,6 +19,7 @@ export class AppTextinput extends Component {
           defaultValue={this.props.defaultValue}
           autoFocus={this.props.autoFocus}
           keyboardType={this.props.keyboardType}
+          value={this.props.value}
         />
       </View>
     );

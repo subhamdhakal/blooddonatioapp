@@ -71,7 +71,7 @@ const styles = StyleSheet.create({
   surface: {
     padding: 8,
     width: '100%',
-    height: h('6%'),
+    height: h('8%'),
     alignItems: 'center',
     justifyContent: 'center',
     // elevation: 5,

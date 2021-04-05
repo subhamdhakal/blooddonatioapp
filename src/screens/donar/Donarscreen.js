@@ -11,6 +11,7 @@ import {
   TouchableOpacity,
   ScrollView,
   TextInput,
+  Alert,
 } from 'react-native';
 import {SearchBar} from 'react-native-elements';
 
@@ -29,6 +30,8 @@ import colors from './../../assets/colors/colors';
 import AntDesign from 'react-native-vector-icons/AntDesign';
 import {Avatar, Button} from 'react-native-paper';
 import {SearchableFlatList} from 'react-native-searchable-list';
+import call from 'react-native-phone-call';
+
 class Donarscreen extends Component {
   state = {
     searchTerm: '',
@@ -43,13 +46,13 @@ class Donarscreen extends Component {
       <View style={styles.flatlistItem}>
         <View style={styles.leftContainer}>
           <Avatar.Text
-            size={64}
+            size={48}
             color={colors.white}
             label={item.blood_group}
             style={{backgroundColor: colors.primary}}
             labelStyle={{
               fontFamily: 'HelveticaNowDisplay-Regular',
-              fontSize: 32,
+              fontSize: 24,
             }}
           />
         </View>
@@ -60,19 +63,63 @@ class Donarscreen extends Component {
           <Text style={styles.addresstxt}>{item.district}</Text>
         </View>
         <View style={styles.LastContainer}>
-          <TouchableOpacity style={{elevation: 5}}>
-            <AntDesign name="phone" color={colors.acceptGreen} size={26} />
-            <Text style={styles.labelText}>Call</Text>
-          </TouchableOpacity>
-          <View style={styles.frespace}></View>
-          <TouchableOpacity style={{elevation: 5}}>
+          <TouchableOpacity
+            style={{elevation: 5}}
+            onPress={() => this.sendPersonalRequest(item)}>
             <AntDesign name="notification" color={colors.primary} size={26} />
             <Text style={styles.labelText}>Request</Text>
+          </TouchableOpacity>
+          <View style={styles.frespace}></View>
+
+          <TouchableOpacity
+            style={{elevation: 5}}
+            onPress={() => {
+              this.makePhoneCall(item.mobile);
+            }}>
+            <AntDesign name="phone" color={colors.acceptGreen} size={26} />
+            <Text style={styles.labelText}>Call</Text>
           </TouchableOpacity>
         </View>
       </View>
     </View>
   );
+
+  sendPersonalRequest = (item) => {
+    Alert.alert(
+      'Send Individual Request',
+      'Are you sure you want to send ' +
+        item.blood_group +
+        '  blood request to ' +
+        item.full_name +
+        '?',
+      [
+        {
+          text: 'Cancel',
+          onPress: () => console.log('Cancel Pressed'),
+          style: 'cancel',
+        },
+        {text: 'Yes', onPress: () => console.log('Make request')},
+      ],
+    );
+  };
+
+  makePhoneCall = (phoneNumber) => {
+    try {
+      if (phoneNumber.length != 10) {
+        alert('Invalid phone number');
+        return;
+      }
+    } catch (err) {
+      alert('Invalid phone number');
+    }
+
+    const args = {
+      number: phoneNumber,
+      prompt: true,
+    };
+    // Make a call
+    call(args).catch(console.error);
+  };
 
   updateSearch = (search) => {
     this.setState({search});
@@ -97,50 +144,48 @@ class Donarscreen extends Component {
 
   render() {
     return (
-      <ScrollView>
-        <View style={styles.Container}>
-          <NavHeader
-            title={'Donar List'}
-            onPress={() => this.props.navigation.goBack()}
+      <View style={styles.Container}>
+        <NavHeader
+          title={'Donar List'}
+          onPress={() => this.props.navigation.goBack()}
+        />
+        <SearchBar
+          placeholder="Search by Name, District, Blood Group..."
+          onChangeText={(text) => this.searchFilterFunction(text)}
+          value={this.state.value}
+          clearIcon
+          inputStyle={{
+            backgroundColor: colors.white,
+            fontFamily: 'HelveticaNowDisplay-Regular',
+            fontSize: 14,
+            borderColor: colors.white,
+          }}
+          inputContainerStyle={{
+            backgroundColor: colors.white,
+            borderColor: colors.white,
+          }}
+          lightTheme
+          containerStyle={{
+            backgroundColor: colors.white,
+            borderColor: colors.white,
+            borderWidth: 0,
+          }}
+        />
+        <View style={styles.flatlistContainerView}>
+          <AnimatedFlatList
+            contentContainerStyle={{
+              marginTop: -h('1%'),
+            }}
+            data={this.state.data}
+            renderItem={({item}) => this.RenderItem(item)}
+            animationType={AnimationType.SlideFromRight}
+            keyExtractor={(item) => item.full_name}
+            animationDuration={1000}
+            focused={true}
           />
-          <SearchBar
-            placeholder="Search by Name, District, Blood Group..."
-            onChangeText={(text) => this.searchFilterFunction(text)}
-            value={this.state.value}
-            clearIcon
-            inputStyle={{
-              backgroundColor: colors.white,
-              fontFamily: 'HelveticaNowDisplay-Regular',
-              fontSize: 14,
-              borderColor: colors.white,
-            }}
-            inputContainerStyle={{
-              backgroundColor: colors.white,
-              borderColor: colors.white,
-            }}
-            lightTheme
-            containerStyle={{
-              backgroundColor: colors.white,
-              borderColor: colors.white,
-              borderWidth: 0,
-            }}
-          />
-          <View style={styles.flatlistContainerView}>
-            <AnimatedFlatList
-              contentContainerStyle={{
-                marginTop: -h('1%'),
-              }}
-              data={this.state.data}
-              renderItem={({item}) => this.RenderItem(item)}
-              animationType={AnimationType.SlideFromRight}
-              keyExtractor={(item) => item.name}
-              animationDuration={1000}
-              focused={true}
-            />
-            <View style={styles.frespace}></View>
-          </View>
+          <View style={styles.frespace}></View>
         </View>
-      </ScrollView>
+      </View>
     );
   }
 }
@@ -166,7 +211,7 @@ const styles = StyleSheet.create({
   flatlistItem: {
     backgroundColor: '#fff',
     width: '90%',
-    height: h('19%'),
+    height: h('15%'),
     justifyContent: 'center',
     flexDirection: 'row',
     borderRadius: h('1%'),
@@ -186,7 +231,7 @@ const styles = StyleSheet.create({
   },
   leftContainer: {
     // backgroundColor: '#000',
-    width: '30%',
+    width: '20%',
     height: '100%',
     alignItems: 'center',
     justifyContent: 'center',
@@ -208,9 +253,11 @@ const styles = StyleSheet.create({
   LastContainer: {
     // backgroundColor: 'yellow',
     width: '20%',
-    marginEnd: h('2%'),
-    alignContent: 'center',
     justifyContent: 'center',
+    alignContent: 'center',
+    alignItems: 'center',
+
+    flexDirection: 'row',
   },
   nametxt: {
     color: colors.black,
@@ -280,8 +327,7 @@ const styles = StyleSheet.create({
   },
   frespace: {
     // backgroundColor: 'white',
-    width: '100%',
-    height: h('3%'),
+    width: '20%',
     // marginTop: -h('50%'),
   },
 });
