@@ -199,6 +199,10 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: 'white',
   },
+  lottie: {
+    width: 200,
+    height: 200,
+  },
   topContainer: {
     // backgroundColor: 'red',
     width: '100%',

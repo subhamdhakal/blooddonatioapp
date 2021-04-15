@@ -2,6 +2,7 @@ import {BASE_URL} from './../constants/app-constants';
 import axios from 'react-native-axios';
 const queryString = require('query-string');
 import {loginSuccessful} from '../reducers/loginReducer';
+import AsyncStorage from '@react-native-community/async-storage';
 
 export const login = ({email, password, onSuccess, onFailure}) => {
   console.log('login pressed' + email + password);
@@ -12,13 +13,23 @@ export const login = ({email, password, onSuccess, onFailure}) => {
         password: password,
       })
       .then((res) => {
-        console.log(res);
         dispatch(loginSuccessful(res.data));
-        onSuccess();
+        console.log(res.data.user);
+        try {
+          AsyncStorage.setItem(
+            'userdata',
+            JSON.stringify(res.data.user),
+            () => {
+              onSuccess();
+            },
+          );
+        } catch (err) {
+          console.log(err);
+        }
       })
       .catch((err) => {
         console.log(JSON.stringify(err));
-        onFailure(err.response.data.error);
+        onFailure(err.response);
       });
   };
 };

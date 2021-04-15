@@ -14,6 +14,7 @@ import {
   Alert,
 } from 'react-native';
 import {SearchBar} from 'react-native-elements';
+import AnimatedLoader from 'react-native-animated-loader';
 
 import {
   widthPercentageToDP as w,
@@ -31,8 +32,9 @@ import AntDesign from 'react-native-vector-icons/AntDesign';
 import {Avatar, Button} from 'react-native-paper';
 import {SearchableFlatList} from 'react-native-searchable-list';
 import call from 'react-native-phone-call';
+import {requestblood} from './../../actions/bloodrequest';
 
-class Donarscreen extends Component {
+class BloodRequestTab extends Component {
   state = {
     searchTerm: '',
     data: this.props.donorList,
@@ -98,9 +100,47 @@ class Donarscreen extends Component {
           onPress: () => console.log('Cancel Pressed'),
           style: 'cancel',
         },
-        {text: 'Yes', onPress: () => console.log('Make request')},
+        {text: 'Yes', onPress: () => this.makePersonalRequest({data: item})},
       ],
     );
+  };
+  toggleLogin(value) {
+    this.setState({
+      loading: value,
+    });
+  }
+
+  makePersonalRequest = ({data}) => {
+    console.log(JSON.stringify(data));
+
+    const value = {
+      email: data.email,
+      phone_no: data.mobile,
+      address: data.district,
+      blood_group: data.blood_group,
+      status: 'REQUESTED',
+      latitude: 2.3,
+      longitude: 3.2,
+    };
+    this.toggleLogin(true);
+
+    this.props.actions.requestblood({
+      accessToken: this.props.access_token,
+      value: value,
+
+      onSuccess: (bloodrequestid) => {
+        PushNotification.subscribeToTopic(bloodrequestid);
+        this.props.navigation.replace('BottomTab');
+        alert('Blood request posted successfully!');
+        this.toggleLogin(false);
+      },
+      onFailure: (errorMsg) => {
+        this.toggleLogin(false);
+        alert(errorMsg);
+
+        //Alert error message
+      },
+    });
   };
 
   makePhoneCall = (phoneNumber) => {
@@ -149,6 +189,12 @@ class Donarscreen extends Component {
           title={'Donar List'}
           onPress={() => this.props.navigation.goBack()}
         />
+        <AnimatedLoader
+          visible={this.state.loading}
+          overlayColor="rgba(255,255,255,0.75)"
+          source={require('../../assets/loader.json')}
+          animationStyle={styles.lottie}
+          speed={1}></AnimatedLoader>
         <SearchBar
           placeholder="Search by Name, District, Blood Group..."
           onChangeText={(text) => this.searchFilterFunction(text)}
@@ -192,20 +238,25 @@ class Donarscreen extends Component {
 const mapStateToProps = (state) => {
   return {
     donorList: state.dataReducer.donorList,
+    access_token: state.loginReducer.loginResponse['token'],
   };
 };
 
 function mapDispatchToProps(dispatch) {
   return {
-    actions: bindActionCreators({}, dispatch),
+    actions: bindActionCreators({requestblood}, dispatch),
   };
 }
 
-export default connect(mapStateToProps, mapDispatchToProps)(Donarscreen);
+export default connect(mapStateToProps, mapDispatchToProps)(BloodRequestTab);
 
 const styles = StyleSheet.create({
   Container: {
     flex: 1,
+  },
+  lottie: {
+    width: 200,
+    height: 200,
   },
 
   flatlistItem: {
@@ -228,6 +279,7 @@ const styles = StyleSheet.create({
   flatlistContainerView: {
     backgroundColor: '#E6DDDD',
     height: '90%',
+    flex: 1,
   },
   leftContainer: {
     // backgroundColor: '#000',

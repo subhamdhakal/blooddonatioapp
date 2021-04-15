@@ -88,7 +88,7 @@ export class ProfileScreen extends Component {
             />
             <LabelAndField
               labelText={'Phone:'}
-              valueText={this.props.userData['phone']}
+              valueText={this.props.userData['phone_no']}
             />
             <LabelAndField
               labelText={'Email:'}
@@ -110,7 +110,11 @@ export class ProfileScreen extends Component {
             />
             <AppButton
               title={'Log Out'}
-              onPress={() => this.props.navigation.navigate('WelcomeScreen')}
+              onPress={() =>
+                AsyncStorage.removeItem('userdata', () => {
+                  this.props.navigation.navigate('WelcomeScreen');
+                })
+              }
             />
           </View>
         </View>

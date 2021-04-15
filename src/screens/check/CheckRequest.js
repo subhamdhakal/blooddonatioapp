@@ -114,7 +114,7 @@ class CheckRequest extends Component {
     return (
       <View style={styles.Container}>
         <NavHeader
-          title={'Donar List'}
+          title={'Blood Requests'}
           onPress={() => this.props.navigation.goBack()}
         />
         <SearchBar
@@ -143,6 +143,7 @@ class CheckRequest extends Component {
           <AnimatedFlatList
             contentContainerStyle={{
               marginTop: -h('1%'),
+              marginBottom: h('10%'),
             }}
             data={this.state.data}
             renderItem={({item}) => this.RenderItem(item)}
@@ -195,6 +196,7 @@ const styles = StyleSheet.create({
   flatlistContainerView: {
     backgroundColor: '#E6DDDD',
     height: '90%',
+    flex: 1,
   },
   leftContainer: {
     // backgroundColor: '#000',

@@ -14,12 +14,12 @@ import {
 } from 'react-native-responsive-screen';
 import {KeyboardAwareScrollView} from '@codler/react-native-keyboard-aware-scroll-view';
 import {AppButton, NavHeader, AppTextinput} from '../../components';
-import AsyncStorage from '@react-native-community/async-storage';
 import {login} from './../../actions/login';
 import {bindActionCreators} from 'redux';
 import {connect} from 'react-redux';
 import AnimatedLoader from 'react-native-animated-loader';
 import {configureNotification} from './../../utils/NotificationConfigure';
+import {AsyncStorage} from '@react-native-community/async-storage';
 
 class Signin extends Component {
   state = {
@@ -45,8 +45,8 @@ class Signin extends Component {
           email: this.state.email,
           password: this.state.password,
           onSuccess: () => {
-            this.toggleLogin(false);
             this.props.navigation.replace('BottomTab');
+            this.toggleLogin(false);
           },
           onFailure: (errorMsg) => {
             //Alert error message
@@ -138,6 +138,10 @@ const styles = StyleSheet.create({
   Container: {
     flex: 1,
     backgroundColor: 'white',
+  },
+  lottie: {
+    width: 200,
+    height: 200,
   },
   bgContainer: {
     justifyContent: 'center',

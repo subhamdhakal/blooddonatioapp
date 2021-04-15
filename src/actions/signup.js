@@ -1,6 +1,6 @@
 import {BASE_URL} from './../constants/app-constants';
 import axios from 'react-native-axios';
-import {loginSuccessful} from '../reducers/loginReducer';
+import {loginSuccessful, updateUserData} from '../reducers/loginReducer';
 const queryString = require('query-string');
 export const signup = ({signUpDetails, onSuccess, onFailure}) => {
   return (dispatch) => {
@@ -19,6 +19,32 @@ export const signup = ({signUpDetails, onSuccess, onFailure}) => {
       })
       .catch((error) => {
         onFailure(error.response.data.error);
+      });
+  };
+};
+
+export const updateuser = ({
+  accessToken,
+  updateDetails,
+  onSuccess,
+  onFailure,
+}) => {
+  return (dispatch) => {
+    console.log(JSON.stringify(updateDetails));
+    return axios
+      .post(BASE_URL + 'api/v1/update-profile', updateDetails, {
+        headers: {
+          Authorization: `Bearer ${accessToken}`,
+        },
+      })
+      .then((res) => {
+        console.log(res.data);
+        dispatch(loginSuccessful(res.data));
+        onSuccess();
+      })
+      .catch((error) => {
+        onFailure(error.response.data);
+        console.log(JSON.stringify(error.response));
       });
   };
 };

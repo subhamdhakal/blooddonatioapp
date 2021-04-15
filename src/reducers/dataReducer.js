@@ -6,10 +6,10 @@ import {
 } from '../constants/action-types';
 
 const initialState = {
-  donorList: [],
-  bloodRequest: [],
-  eventList: [],
-  userRequest: [],
+  donorList: [''],
+  bloodRequest: [''],
+  eventList: [''],
+  userRequest: [''],
 };
 
 function dataReducer(state = initialState, action) {

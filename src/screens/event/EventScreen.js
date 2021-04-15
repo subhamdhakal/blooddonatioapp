@@ -75,13 +75,10 @@ class EventScreen extends Component {
             data={this.props.eventList}
             renderItem={({item}) => this.RenderItem(item)}
             animationType={AnimationType.SlideFromRight}
-            keyExtractor={(item) => item.name}
+            keyExtractor={(item) => item.date_time}
             animationDuration={1000}
             focused={true}
           />
-          <View style={styles.frespace}></View>
-
-          <View style={styles.frespace}></View>
         </View>
       </View>
     );
@@ -133,7 +130,8 @@ const styles = StyleSheet.create({
   },
   flatlistContainerView: {
     backgroundColor: '#E6DDDD',
-    height: '100%',
+    height: '90%',
+    flex: 1,
   },
   leftContainer: {
     // backgroundColor: '#000',

@@ -53,7 +53,7 @@ export class SplitScreen extends Component {
               style={styles.img}
               source={require('../../assets/logo2.png')}
             />
-            <Text style={styles.txt}>Blood Bank</Text>
+            <Text style={styles.txt}>Blood Book</Text>
           </View>
           <View style={styles.loading}>
             <ActivityIndicator

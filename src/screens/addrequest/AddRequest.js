@@ -75,7 +75,7 @@ class AddRequest extends Component {
           phone_no: this.state.phone_no,
           address: this.state.address,
           blood_group: this.state.blood,
-          status: 'PENDING',
+          status: 'REQUESTED',
           latitude: this.state.latitude,
           longitude: this.state.longitude,
         };
@@ -385,6 +385,10 @@ const styles = StyleSheet.create({
     marginLeft: h('7%'),
     marginTop: h('1%'),
     fontFamily: 'HelveticaNowDisplay-ExtraBold',
+  },
+  lottie: {
+    width: 200,
+    height: 200,
   },
   circle: {
     // backgroundColor: 'yellow',

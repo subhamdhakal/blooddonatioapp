@@ -23,11 +23,19 @@ import {bindActionCreators} from 'redux';
 import {connect} from 'react-redux';
 import {Avatar} from 'react-native-paper';
 import colors from './../../assets/colors/colors';
-import {fetcheduserrequestlist} from '../../actions/fetchdata';
+import {
+  fetcheduserrequestlist,
+  deleteBloodRequest,
+  completeBloodRequest,
+} from '../../actions/fetchdata';
 import {color} from 'react-native-reanimated';
 
 export class MyRequest extends Component {
   componentDidMount() {
+    this.fetchUserRequestList();
+  }
+
+  fetchUserRequestList() {
     this.props.actions.fetcheduserrequestlist({
       accessToken: this.props.access_token,
       user_id: this.props.userData['user_id'],
@@ -43,6 +51,25 @@ export class MyRequest extends Component {
         // });
       },
     });
+  }
+  getStatusColor({status}) {
+    switch (status) {
+      case 'PENDING':
+        return colors.pendingYellow;
+        break;
+      case 'COMPLETE':
+        return colors.acceptGreen;
+        break;
+
+      case 'REQUESTED':
+        return colors.primary;
+        break;
+
+      default:
+        return colors.rejectRed;
+
+        break;
+    }
   }
 
   RenderItem = (item) => (
@@ -89,8 +116,20 @@ export class MyRequest extends Component {
             }}></View>
         </View>
         <View style={styles.LastContainer}>
-          <View style={styles.requestContainr}>
-            <Text style={styles.requestTxt}>Requested</Text>
+          <View
+            style={{
+              backgroundColor: this.getStatusColor({status: item.status}),
+              width: '75%',
+              height: '25%',
+              justifyContent: 'center',
+              paddingLeft: h('1%'),
+              // borderRadius: h('10%'),
+              marginTop: h('3%'),
+
+              borderTopLeftRadius: h('10%'),
+              borderBottomLeftRadius: h('10%'),
+            }}>
+            <Text style={styles.requestTxt}>{item.status}</Text>
           </View>
           <View
             style={{
@@ -107,24 +146,38 @@ export class MyRequest extends Component {
               <AntDesign name="delete" color={colors.primary} size={24} />
               <Text style={styles.labelText}>Delete</Text>
             </TouchableOpacity>
-            <TouchableOpacity
-              style={{
-                elevation: 5,
-                alignItems: 'center',
-                alignContent: 'center',
-                justifyContent: 'center',
-              }}
-              onPress={() => this.completeRequest(item)}>
-              <AntDesign name="check" color={colors.acceptGreen} size={24} />
-              <Text style={styles.labelText}>Complete</Text>
-            </TouchableOpacity>
+            {item.status != 'COMPLETE' ? (
+              <TouchableOpacity
+                style={{
+                  elevation: 5,
+                  alignItems: 'center',
+                  alignContent: 'center',
+                  justifyContent: 'center',
+                }}
+                onPress={() => this.completeRequest(item)}>
+                <AntDesign name="check" color={colors.acceptGreen} size={24} />
+                <Text style={styles.labelText}>Complete</Text>
+              </TouchableOpacity>
+            ) : null}
           </View>
         </View>
       </View>
     </View>
   );
+  //  <RegularText label={item.doctor} />
+  //                   <LabelText label={item.doctorDepartment} />
+  //                   <LabelText label={item.appointmentDate} />
+  //                   <LabelText label={item.createdBy} />
+  //                   <LabelText label={item.startTime} />
+  //                   <LabelText label={item.appointmentStatus} />
 
   deleteRequest = (item) => {
+    console.log(JSON.stringify(item));
+    var deleteRequestBody = {
+      request_id: item.request_id,
+      user_id: item.user_id,
+    };
+
     Alert.alert(
       'Delete Blood Request',
       'Are you sure you want to delete this request ?',
@@ -134,12 +187,34 @@ export class MyRequest extends Component {
           onPress: () => console.log('Cancel Pressed'),
           style: 'cancel',
         },
-        {text: 'Yes', onPress: () => console.log('Make request')},
+        {
+          text: 'Yes',
+          onPress: () =>
+            this.props.actions.deleteBloodRequest({
+              accessToken: this.props.access_token,
+              deleteRequestBody: deleteRequestBody,
+              onSuccess: () => {
+                // this.toggleLogin(false);
+                // this.props.navigation.replace('BottomTab');
+                this.fetchUserRequestList();
+              },
+              onFailure: () => {
+                //Alert error message
+                // this.setState({
+                //   modalVisible: false,
+                // });
+              },
+            }),
+        },
       ],
     );
   };
 
   completeRequest = (item) => {
+    var completeRequestBody = {
+      request_id: item.request_id,
+      user_id: item.user_id,
+    };
     Alert.alert(
       'Complete Blood Request',
       'Are you sure you want to complete this request ? ',
@@ -149,7 +224,24 @@ export class MyRequest extends Component {
           onPress: () => console.log('Cancel Pressed'),
           style: 'cancel',
         },
-        {text: 'Yes', onPress: () => console.log('Make request')},
+        {
+          text: 'Yes',
+          onPress: () =>
+            this.props.actions.completeBloodRequest({
+              accessToken: this.props.access_token,
+              completeRequestBody: completeRequestBody,
+              onSuccess: () => {
+                // this.toggleLogin(false);
+                // this.props.navigation.replace('BottomTab');
+              },
+              onFailure: () => {
+                //Alert error message
+                // this.setState({
+                //   modalVisible: false,
+                // });
+              },
+            }),
+        },
       ],
     );
   };
@@ -185,7 +277,7 @@ export class MyRequest extends Component {
             data={this.props.mybloodrequest}
             renderItem={({item}) => this.RenderItem(item)}
             animationType={AnimationType.SlideFromRight}
-            keyExtractor={(item) => item.name}
+            keyExtractor={(item) => item.request_id}
             animationDuration={1000}
             focused={true}
           />
@@ -207,6 +299,8 @@ function mapDispatchToProps(dispatch) {
     actions: bindActionCreators(
       {
         fetcheduserrequestlist,
+        deleteBloodRequest,
+        completeBloodRequest,
       },
       dispatch,
     ),
@@ -285,7 +379,6 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     flexDirection: 'row',
     borderRadius: h('1%'),
-    marginTop: h('1%'),
   },
   flatlistContainer: {
     alignItems: 'center',
@@ -294,6 +387,8 @@ const styles = StyleSheet.create({
   flatlistContainerView: {
     backgroundColor: '#E6DDDD',
     height: '100%',
+    flex: 1,
+    paddingTop: h('2%'),
   },
   leftContainer: {
     // backgroundColor: '#000',
@@ -372,8 +467,9 @@ const styles = StyleSheet.create({
   },
   requestTxt: {
     color: '#Ffff',
-    fontSize: h('1.5%'),
-    fontFamily: 'HelveticaNowDisplay-Medium',
+    fontSize: h('1.2%'),
+
+    fontFamily: 'HelveticaNowDisplay-Bold',
   },
   frespace: {
     backgroundColor: 'white',

@@ -35,13 +35,6 @@ export const fetchdonorlistandbloodrequest = ({
       .then(
         axios.spread(
           (donorlistresponse, bloodrequestresponse, eventlistresponse) => {
-            console.log(
-              'donorlist' + JSON.stringify(donorlistresponse['data']['data']),
-            );
-            console.log(
-              'bloodrequest' +
-                JSON.stringify(bloodrequestresponse['data']['data']),
-            );
             dispatch(fetchedDonorList(donorlistresponse['data']['data']));
             dispatch(fetchedBloodRequest(bloodrequestresponse['data']['data']));
             dispatch(fetchedEventList(eventlistresponse['data']));
@@ -65,6 +58,7 @@ export const fetcheduserrequestlist = ({
   onSuccess,
   onFailure,
 }) => {
+  console.log(user_id);
   return (dispatch) => {
     return axios
       .get(BASE_URL + 'api/v1/blood-request-list?user_id=' + user_id, {
@@ -73,8 +67,101 @@ export const fetcheduserrequestlist = ({
         },
       })
       .then((res) => {
-        console.log('individual' + JSON.stringify(res['data']['data']));
         dispatch(fetchedUserRequest(res.data['data']));
+        console.log('User request' + JSON.stringify(res));
+        onSuccess();
+      })
+      .catch((err) => {
+        console.log(err);
+        onFailure();
+      });
+  };
+};
+
+export const deleteBloodRequest = ({
+  accessToken,
+  deleteRequestBody,
+  onSuccess,
+  onFailure,
+}) => {
+  //   {
+  //     "request_id": "5",
+  //     "user_id": "47"
+  // }
+  return (dispatch) => {
+    return axios
+      .post(BASE_URL + 'api/v1/blood-request-del', deleteRequestBody, {
+        headers: {
+          Authorization: `Bearer ${accessToken}`,
+        },
+      })
+      .then((res) => {
+        console.log(res);
+
+        onSuccess();
+      })
+      .catch((err) => {
+        console.log(err);
+        onFailure();
+      });
+  };
+};
+
+export const completeBloodRequest = ({
+  accessToken,
+  completeRequestBody,
+  onSuccess,
+  onFailure,
+}) => {
+  return (dispatch) => {
+    //     {
+    //     "request_id": "2",
+    //     "user_id": "45"
+    // }
+    return axios
+      .post(BASE_URL + 'api/v1/complete-request', completeRequestBody, {
+        headers: {
+          Authorization: `Bearer ${accessToken}`,
+        },
+      })
+      .then((res) => {
+        console.log(res);
+
+        onSuccess();
+      })
+      .catch((err) => {
+        console.log(err);
+        onFailure();
+      });
+  };
+};
+
+export const acceptBloodRequest = ({
+  accessToken,
+  acceptBloodRequestBody,
+  onSuccess,
+  onFailure,
+}) => {
+  //   {
+  //     "request_id": "2",
+  //     "user_id": "45"
+  // }
+
+  return (dispatch) => {
+    //     {
+    //     "request_id": "2",
+    //     "user_id": "45"
+    // }
+    return axios
+      .get(BASE_URL + 'api/v1/accept-request', acceptBloodRequestBody, {
+        headers: {
+          Authorization: `Bearer ${accessToken}`,
+        },
+      })
+      .then((res) => {
+        // dispatch(fetchedUserRequest(res.data['data']));
+        console.log(res);
+
         onSuccess();
       })
       .catch((err) => {

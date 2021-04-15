@@ -2,11 +2,8 @@
   package="com.fibonacciengineeringanditsolutions.bloodbook">
 
     <uses-permission android:name="android.permission.INTERNET" />
-    <uses-permission android:name="android.permission.CAMERA" />
-    <uses-feature android:name="android.hardware.camera" />
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
     <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE"/>
-    <uses-permission android:name="android.permission.RECORD_AUDIO" />
     <!-- Define ACCESS_FINE_LOCATION if you will use enableHighAccuracy=true  -->
     <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION"/>
 
@@ -37,7 +34,19 @@
             <category android:name="android.intent.category.LAUNCHER" />
         </intent-filter>
       </activity>
+      <service
+      android:name="com.dieam.reactnativepushnotification.modules.RNPushNotificationListenerService"
+      android:exported="false" >
+      <intent-filter>
+          <action android:name="com.google.firebase.MESSAGING_EVENT" />
+      </intent-filter>
+      </service>
       <activity android:name="com.facebook.react.devsupport.DevSettingsActivity" />
+
+      <meta-data  android:name="com.dieam.reactnativepushnotification.notification_foreground"
+                  android:value="false"/>
+      <meta-data  android:name="com.dieam.reactnativepushnotification.notification_color"
+                  android:resource="@android:color/white"/>
     </application>
 
 </manifest>

@@ -218,6 +218,10 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     marginTop: h('1%'),
   },
+  lottie: {
+    width: 200,
+    height: 200,
+  },
   detail: {
     fontSize: h('2.5%'),
     color: 'black',

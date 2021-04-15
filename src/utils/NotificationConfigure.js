@@ -16,7 +16,7 @@ export function configureNotification() {
       // notification.finish(PushNotificationIOS.FetchResult.NoData);
     },
     // Android only
-    senderID: '322842383917',
+    senderID: '221674244219',
     // iOS only
     permissions: {
       alert: true,

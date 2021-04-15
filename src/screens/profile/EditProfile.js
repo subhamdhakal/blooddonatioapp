@@ -27,7 +27,7 @@ import AsyncStorage from '@react-native-community/async-storage';
 import {bindActionCreators} from 'redux';
 import {connect} from 'react-redux';
 import DateTimePicker from '@react-native-community/datetimepicker';
-import {signup} from './../../actions/signup';
+import {updateuser} from './../../actions/signup';
 import RNModalPicker from './../../components/RNModalPicker';
 import {DISTRICT_LIST} from './../../constants/app-constants';
 import colors from '../../assets/colors/colors';
@@ -52,9 +52,6 @@ class EditProfile extends Component {
   };
   constructor(props) {
     super(props);
-    this.setState({
-      gender: this.props.userData['sex'],
-    });
 
     const person = {
       id: '',
@@ -79,7 +76,18 @@ class EditProfile extends Component {
   }
 
   componentDidMount() {
-    this.setState({name: this.props.userData['name']});
+    this.setState({
+      name: this.props.userData['name'],
+      gender: this.props.userData['sex'],
+      role: JSON.stringify(this.props.userData['role_id']),
+      blood: this.props.userData['blood_group'],
+      email: this.props.userData['email'],
+      phone: this.props.userData['phone'],
+      dateofbirth: this.props.userData['date_of_birth'],
+      disease: this.props.userData['disease'],
+      district: this.props.userData['district'],
+      last_blood_donated: this.props.userData['last_blood_donated'],
+    });
   }
 
   toggleLogin(value) {
@@ -103,76 +111,59 @@ class EditProfile extends Component {
     console.log('name' + this.state.name, this.state.email);
     const check = validator.validate(this.state.email.replace(/\s/g, ''));
     if (check === true) {
-      if (password !== '') {
-        if (password.length > 8) {
-          if (name !== '') {
-            if (phone !== '') {
-              if (confirmpassword !== '') {
-                if (password === confirmpassword) {
-                  if (gender !== '') {
-                    if (blood !== '') {
-                      if (dateofbirth != '') {
-                        if (district != '') {
-                          const value = {
-                            name: this.state.name,
-                            email: this.state.email.replace(/\s/g, ''),
-                            mobile: this.state.phone,
-                            password: this.state.password,
-                            password_confirmation: this.state.confirmpassword,
-                            sex: this.state.gender,
-                            role_id: this.state.role,
-                            blood_group: this.state.blood,
-                            disease: this.state.disease,
-                            district: this.state.district,
-                            location: this.state.location,
-                            date_of_birth: this.state.dateofbirth,
-                            last_blood_donated: this.state.last_blood_donated,
-                          };
-                          this.toggleLogin(true);
+      if (name !== '') {
+        if (phone !== '') {
+          if (gender !== '') {
+            if (blood !== '') {
+              if (dateofbirth != '') {
+                if (district != '') {
+                  const value = {
+                    name: this.state.name,
+                    email: this.state.email.replace(/\s/g, ''),
+                    mobile: this.state.phone,
+                    sex: this.state.gender,
+                    role_id: this.state.role,
+                    blood_group: this.state.blood,
+                    disease: this.state.disease,
+                    district: this.state.district,
+                    location: 'location',
+                    date_of_birth: this.state.dateofbirth,
+                    last_blood_donated: this.state.last_blood_donated,
+                  };
+                  this.toggleLogin(true);
 
-                          this.props.actions.signup({
-                            signUpDetails: value,
+                  this.props.actions.updateuser({
+                    accessToken: this.props.access_token,
+                    updateDetails: value,
 
-                            onSuccess: () => {
-                              this.toggleLogin(false);
-                              this.props.navigation.replace('BottomTab');
-                            },
-                            onFailure: (errorMsg) => {
-                              this.toggleLogin(false);
-                              alert(errorMsg);
+                    onSuccess: () => {
+                      this.toggleLogin(false);
+                      alert('Profile Updated Successful');
+                    },
+                    onFailure: (errorMsg) => {
+                      this.toggleLogin(false);
+                      alert(errorMsg);
 
-                              //Alert error message
-                            },
-                          });
-                        } else {
-                          alert('District is required');
-                        }
-                      } else {
-                        alert('Date of birth is required');
-                      }
-                    } else {
-                      alert('Blood Type is Required');
-                    }
-                  } else {
-                    alert('Gender is Required');
-                  }
+                      //Alert error message
+                    },
+                  });
                 } else {
-                  alert('Password and Cofirm password is not same');
+                  alert('District is required');
                 }
               } else {
-                alert('Confirm password is Required');
+                alert('Date of birth is required');
               }
             } else {
-              alert('Phone No is Required');
+              alert('Blood Type is Required');
             }
           } else {
-            alert('Name is Required');
+            alert('Gender is Required');
           }
         } else {
-          alert('Password should be of 8 Characters');
+          alert('Phone No is Required');
         }
       } else {
-        alert('password is Required');
+        alert('Name is Required');
       }
     } else {
       alert('email is incorect');
@@ -294,7 +285,7 @@ class EditProfile extends Component {
                   changeAnimation={'fade'}
                   searchBarPlaceHolder={'Search'}
                   showPickerTitle={true}
-                  placeHolderLabel={'Select District'}
+                  placeHolderLabel={this.props.userData['district']}
                   selectedLabel={this.state.district}
                   dropDownImage={require('../../assets/icons/ic_drop_down.png')}
                   selectedValue={(index, item) =>
@@ -343,7 +334,12 @@ class EditProfile extends Component {
           <View style={styles.midContainer}>
             <Text style={styles.gtxt}>Gender</Text>
             <View style={styles.imgContainer}>
-              <TouchableOpacity style={styles.img}>
+              <TouchableOpacity
+                style={styles.img}
+                onPress={() => {
+                  const g = 'male';
+                  this.setState({gender: g});
+                }}>
                 {this.state.gender === 'male' ? (
                   <Image
                     style={styles.imgs}
@@ -372,9 +368,9 @@ class EditProfile extends Component {
                 </Text>
               </TouchableOpacity>
               <TouchableOpacity
-                onPress={() => this.setState({gender: 'Female'})}
+                onPress={() => this.setState({gender: 'female'})}
                 style={styles.img2}>
-                {this.state.gender === 'Female' ? (
+                {this.state.gender === 'female' ? (
                   <Image
                     style={styles.imgs}
                     source={require('../../assets/woman.png')}
@@ -392,7 +388,7 @@ class EditProfile extends Component {
                     styles.txtf,
                     {
                       color:
-                        this.state.gender === 'Female'
+                        this.state.gender === 'female'
                           ? '#ff7171'
                           : colors.textDarkGray,
                     },
@@ -406,11 +402,8 @@ class EditProfile extends Component {
             <Text style={styles.gtxt}>Role</Text>
             <View style={styles.imgContainer}>
               <TouchableOpacity
-                onPress={() => {
-                  const r = '2';
-                  this.setState({role: r});
-                }}
-                style={styles.img2}>
+                style={styles.img2}
+                onPress={() => this.setState({role: '2'})}>
                 {this.state.role === '2' ? (
                   <Image
                     style={styles.imgs}
@@ -713,7 +706,10 @@ class EditProfile extends Component {
             {/* end */}
           </View>
           <View style={styles.btnview}>
-            <AppButton title={'Signup'} onPress={() => this.validate()} />
+            <AppButton
+              title={'Update Profile'}
+              onPress={() => this.validate()}
+            />
           </View>
         </KeyboardAwareScrollView>
       </View>
@@ -731,7 +727,7 @@ function mapDispatchToProps(dispatch) {
   return {
     actions: bindActionCreators(
       {
-        signup,
+        updateuser,
       },
       dispatch,
     ),
@@ -748,6 +744,10 @@ const styles = StyleSheet.create({
     // backgroundColor: 'red',
     width: '100%',
     height: h('70%'),
+  },
+  lottie: {
+    width: 200,
+    height: 200,
   },
   midContainer: {
     // backgroundColor: 'yellow',

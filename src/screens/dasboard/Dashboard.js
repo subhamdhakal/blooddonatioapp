@@ -23,6 +23,44 @@ import colors from './../../assets/colors/colors';
 import {configureNotification} from './../../utils/NotificationConfigure';
 import PushNotification from 'react-native-push-notification';
 
+export function setupPushNotification(handleNotification) {
+  PushNotification.configure({
+    // (optional) Called when Token is generated (iOS and Android)
+    onRegister: function (token) {
+      console.log('TOKEN:', token);
+    },
+
+    // (required) Called when a remote or local notification is opened or received
+    onNotification: function (notification) {
+      console.log('NOTIFICATION:', notification);
+      if (notification.foreground === true) {
+        alert(JSON.stringify(notification));
+      } else {
+        // handleNotification(notification);
+        // alert(JSON.stringify(notification));
+        alert('background');
+      }
+      // onAction replacement here
+
+      // process the notification here
+
+      // required on iOS only
+      // notification.finish(PushNotificationIOS.FetchResult.NoData);
+    },
+    // Android only
+    senderID: '221674244219',
+    // iOS only
+    permissions: {
+      alert: true,
+      badge: true,
+      sound: true,
+    },
+    requestPermissions: true,
+    requestPermissions: Platform.OS === 'ios',
+  });
+  return PushNotification;
+}
+
 class Dashboard extends Component {
   state = {
     blood_group_notification: this.props.blood_group_notification,
@@ -32,7 +70,10 @@ class Dashboard extends Component {
     super(props);
   }
   async componentDidMount() {
-    configureNotification();
+    // configureNotification(this.props);
+
+    this.pushNotification = setupPushNotification(this._handleNotificationOpen);
+
     console.log(
       'blood_group_notification' + this.props.blood_group_notification,
     );
@@ -55,6 +96,12 @@ class Dashboard extends Component {
       },
     });
   }
+
+  _handleNotificationOpen = () => {
+    const {navigate} = this.props.navigation;
+    console.log('called');
+    navigate('ProfileScreen');
+  };
   render() {
     return (
       <ImageBackground

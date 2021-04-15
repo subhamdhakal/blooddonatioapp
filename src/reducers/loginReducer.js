@@ -6,6 +6,7 @@ import {
   SIGN_UP_SUCCESSFUL,
   SIGN_UP_FAILED,
   SET_UP_ACCESS_TOKEN,
+  UPDATE_USER_DATA,
 } from '../constants/action-types';
 
 const initialState = {
@@ -45,6 +46,12 @@ function loginReducer(state = initialState, action) {
     return {
       ...state,
       accessToken: action.payload,
+    };
+  }
+  if (action.type === UPDATE_USER_DATA) {
+    return {
+      ...state.loginResponse,
+      userData: action.payload,
     };
   }
 
@@ -91,6 +98,12 @@ export const signUpFailed = (error) => {
     type: SIGN_UP_FAILED,
     payload: error,
     loggingIn: false,
+  };
+};
+export const updateUserData = (data) => {
+  return {
+    type: UPDATE_USER_DATA,
+    payload: data,
   };
 };
 
