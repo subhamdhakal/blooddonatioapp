@@ -29,7 +29,7 @@ export const login = ({email, password, onSuccess, onFailure}) => {
       })
       .catch((err) => {
         console.log(JSON.stringify(err));
-        onFailure(err.response);
+        onFailure(JSON.stringify(err.response.data));
       });
   };
 };

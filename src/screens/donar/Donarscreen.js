@@ -33,15 +33,45 @@ import {Avatar, Button} from 'react-native-paper';
 import {SearchableFlatList} from 'react-native-searchable-list';
 import call from 'react-native-phone-call';
 import {requestblood} from './../../actions/bloodrequest';
+import GetLocation from 'react-native-get-location';
+import Geocoder from 'react-native-geocoding';
 
-class BloodRequestTab extends Component {
+class Donarscreen extends Component {
   state = {
     searchTerm: '',
     data: this.props.donorList,
+    latitude: '',
+    longitude: '',
+    address: '',
   };
   constructor(props) {
     super(props);
     this.arrayholder = this.props.donorList;
+  }
+  componentDidMount() {
+    GetLocation.getCurrentPosition({
+      enableHighAccuracy: true,
+      timeout: 15000,
+    })
+      .then((location) => {
+        console.log(location);
+        Geocoder.init('AIzaSyC_GdHrPH8BgAvnlW2yNMuVNuJGMZTEHl0'); // use a valid API key
+        Geocoder.from(location.latitude, location.longitude)
+          .then((json) => {
+            var addressComponent = json.results[0].address_components[0];
+            this.setState({
+              latitude: '' + location.latitude,
+              longitude: '' + location.longitude,
+              address: '' + addressComponent['long_name'],
+            });
+            console.log(addressComponent);
+          })
+          .catch((error) => console.warn(error));
+      })
+      .catch((error) => {
+        const {code, message} = error;
+        console.warn(code, message);
+      });
   }
   RenderItem = (item) => (
     <View style={styles.flatlistContainer}>
@@ -66,7 +96,7 @@ class BloodRequestTab extends Component {
         </View>
         <View style={styles.LastContainer}>
           <TouchableOpacity
-            style={{elevation: 5}}
+            style={{elevation: 5, alignItems: 'center'}}
             onPress={() => this.sendPersonalRequest(item)}>
             <AntDesign name="notification" color={colors.primary} size={26} />
             <Text style={styles.labelText}>Request</Text>
@@ -74,7 +104,7 @@ class BloodRequestTab extends Component {
           <View style={styles.frespace}></View>
 
           <TouchableOpacity
-            style={{elevation: 5}}
+            style={{elevation: 5, alignItems: 'center'}}
             onPress={() => {
               this.makePhoneCall(item.mobile);
             }}>
@@ -116,27 +146,27 @@ class BloodRequestTab extends Component {
     const value = {
       email: data.email,
       phone_no: data.mobile,
-      address: data.district,
+      address: this.state.address != '' ? this.state.address : data.district,
       blood_group: data.blood_group,
       status: 'REQUESTED',
-      latitude: 2.3,
-      longitude: 3.2,
+      latitude: this.state.latitude,
+      longitude: this.state.longitude,
+      donor_id: data.user_id,
     };
     this.toggleLogin(true);
 
     this.props.actions.requestblood({
       accessToken: this.props.access_token,
       value: value,
-
-      onSuccess: (bloodrequestid) => {
-        PushNotification.subscribeToTopic(bloodrequestid);
-        this.props.navigation.replace('BottomTab');
+      onSuccess: () => {
+        // PushNotification.subscribeToTopic(bloodrequestid);
+        // this.props.navigation.replace('BottomTab');
         alert('Blood request posted successfully!');
         this.toggleLogin(false);
       },
       onFailure: (errorMsg) => {
         this.toggleLogin(false);
-        alert(errorMsg);
+        // alert(errorMsg);
 
         //Alert error message
       },
@@ -248,7 +278,7 @@ function mapDispatchToProps(dispatch) {
   };
 }
 
-export default connect(mapStateToProps, mapDispatchToProps)(BloodRequestTab);
+export default connect(mapStateToProps, mapDispatchToProps)(Donarscreen);
 
 const styles = StyleSheet.create({
   Container: {

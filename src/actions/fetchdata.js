@@ -6,10 +6,12 @@ import {
   fetchedBloodRequest,
   fetchedEventList,
   fetchedUserRequest,
+  fetchedIndividualRequest,
 } from '../reducers/dataReducer';
 
 export const fetchdonorlistandbloodrequest = ({
   accessToken,
+  userId,
   onSuccess,
   onFailure,
 }) => {
@@ -22,6 +24,16 @@ export const fetchdonorlistandbloodrequest = ({
       Authorization: `Bearer ${accessToken}`,
     },
   });
+  console.log(userId);
+
+  const bloodrequestsindividual = axios.get(
+    BASE_URL + 'api/v1/user-blood-request-list',
+    {
+      headers: {
+        Authorization: `Bearer ${accessToken}`,
+      },
+    },
+  );
 
   const eventlist = axios.get(BASE_URL + 'api/v1/get-event', {
     headers: {
@@ -31,14 +43,26 @@ export const fetchdonorlistandbloodrequest = ({
 
   return (dispatch) => {
     return axios
-      .all([donorlist, bloodrequests, eventlist])
+      .all([donorlist, bloodrequests, eventlist, bloodrequestsindividual])
       .then(
         axios.spread(
-          (donorlistresponse, bloodrequestresponse, eventlistresponse) => {
+          (
+            donorlistresponse,
+            bloodrequestresponse,
+            eventlistresponse,
+            bloodrequestindividualResponse,
+          ) => {
             dispatch(fetchedDonorList(donorlistresponse['data']['data']));
             dispatch(fetchedBloodRequest(bloodrequestresponse['data']['data']));
             dispatch(fetchedEventList(eventlistresponse['data']));
-
+            dispatch(
+              fetchedIndividualRequest(
+                bloodrequestindividualResponse['data']['data'],
+              ),
+            );
+            console.log(
+              'individual' + JSON.stringify(bloodrequestindividualResponse),
+            );
             onSuccess();
           },
         ),
@@ -58,10 +82,10 @@ export const fetcheduserrequestlist = ({
   onSuccess,
   onFailure,
 }) => {
-  console.log(user_id);
+  console.log('individual response' + user_id);
   return (dispatch) => {
     return axios
-      .get(BASE_URL + 'api/v1/blood-request-list?user_id=' + user_id, {
+      .get(BASE_URL + 'api/v1/blood-request-list?data="59"', {
         headers: {
           Authorization: `Bearer ${accessToken}`,
         },

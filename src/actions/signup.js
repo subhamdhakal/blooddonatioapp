@@ -18,6 +18,7 @@ export const signup = ({signUpDetails, onSuccess, onFailure}) => {
         onSuccess();
       })
       .catch((error) => {
+        console.log(JSON.stringify(error));
         onFailure(error.response.data.error);
       });
   };
@@ -68,7 +69,7 @@ export const changepasword = ({
         onSuccess();
       })
       .catch((error) => {
-        onFailure(error.response.data.error);
+        onFailure(JSON.stringify(error.response.data));
       });
   };
 };

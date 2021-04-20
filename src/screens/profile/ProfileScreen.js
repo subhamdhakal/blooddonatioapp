@@ -88,7 +88,7 @@ export class ProfileScreen extends Component {
             />
             <LabelAndField
               labelText={'Phone:'}
-              valueText={this.props.userData['phone_no']}
+              valueText={this.props.userData['mobile']}
             />
             <LabelAndField
               labelText={'Email:'}

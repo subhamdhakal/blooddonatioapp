@@ -20,11 +20,12 @@ import Signup from './../screens/signup/Signup';
 import SendPersonalRequest from '../screens/request/SendPersonalRequest';
 import EditProfile from '../screens/profile/EditProfile';
 import ChangePassword from './../screens/profile/ChangePassword';
+import {navigationRef} from './../services/NavigationService';
 
 export class StackNavigator extends Component {
   render() {
     return (
-      <NavigationContainer>
+      <NavigationContainer ref={navigationRef}>
         <Stack.Navigator>
           <Stack.Screen
             name="SplitScreen"

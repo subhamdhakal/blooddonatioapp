@@ -45,7 +45,6 @@ class Signup extends Component {
     showDatePicker: false,
     showLastDonatedDatePicker: false,
     dateofbirth: '',
-    disease: '',
     district: '',
     location: '',
     role: '',
@@ -111,18 +110,17 @@ class Signup extends Component {
                         if (district != '') {
                           const value = {
                             name: this.state.name,
-                            email: this.state.email.replace(/\s/g, ''),
+                            email: this.state.email.trim(),
                             mobile: this.state.phone,
                             password: this.state.password,
                             password_confirmation: this.state.confirmpassword,
                             sex: this.state.gender,
                             role_id: this.state.role,
                             blood_group: this.state.blood,
-                            disease: this.state.disease,
                             district: this.state.district,
                             location: this.state.location,
                             date_of_birth: this.state.dateofbirth,
-                            last_blood_donated: this.state.last_blood_donated,
+                            last_donated_blood: this.state.last_blood_donated,
                           };
                           this.toggleLogin(true);
 
@@ -131,7 +129,8 @@ class Signup extends Component {
 
                             onSuccess: () => {
                               this.toggleLogin(false);
-                              this.props.navigation.replace('BottomTab');
+                              this.props.navigation.replace('Signin');
+                              alert('Sign up successful!!');
                             },
                             onFailure: (errorMsg) => {
                               this.toggleLogin(false);
@@ -273,11 +272,6 @@ class Signup extends Component {
                   )}
                 </View>
               </TouchableOpacity>
-
-              <AppTextinput
-                name={'Disease'}
-                onChangeText={(disease) => this.setState({disease})}
-              />
 
               <AppTextinput
                 name={'Password'}
@@ -786,7 +780,7 @@ const styles = StyleSheet.create({
   topContainer: {
     // backgroundColor: 'red',
     width: '100%',
-    height: h('90%'),
+    height: h('80%'),
   },
   midContainer: {
     // backgroundColor: 'yellow',

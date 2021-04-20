@@ -13,7 +13,7 @@ export const requestblood = ({accessToken, value, onSuccess, onFailure}) => {
       .then((res) => {
         console.log('blood request response' + JSON.stringify(res['data']));
         // dispatch(fetchedUserRequest(res.data['data']));
-        onSuccess(JSON.stringify(res['data']['blood_request_id']));
+        onSuccess();
       })
       .catch((err) => {
         console.log(JSON.stringify(err));

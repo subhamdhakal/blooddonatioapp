@@ -14,6 +14,7 @@ import {
 } from 'react-native';
 import {SearchBar} from 'react-native-elements';
 import call from 'react-native-phone-call';
+import {createMaterialTopTabNavigator} from '@react-navigation/material-top-tabs';
 
 import {
   widthPercentageToDP as w,
@@ -30,6 +31,9 @@ import colors from './../../assets/colors/colors';
 import AntDesign from 'react-native-vector-icons/AntDesign';
 import {Avatar, Button} from 'react-native-paper';
 import {SearchableFlatList} from 'react-native-searchable-list';
+import BloodRequestTab from './../check/BloodRequestTab';
+const Tab = createMaterialTopTabNavigator();
+
 class CheckRequest extends Component {
   state = {
     searchTerm: '',
@@ -67,10 +71,15 @@ class CheckRequest extends Component {
             <AntDesign name="phone" color={colors.acceptGreen} size={26} />
             <Text style={styles.labelText}>Call</Text>
           </TouchableOpacity>
+          <TouchableOpacity style={{elevation: 5}}>
+            <AntDesign name="find" color={colors.acceptGreen} size={26} />
+            <Text style={styles.labelText}>Location</Text>
+          </TouchableOpacity>
         </View>
       </View>
     </View>
   );
+
   makePhoneCall = (phoneNumber) => {
     try {
       if (phoneNumber.length != 10) {
@@ -117,7 +126,7 @@ class CheckRequest extends Component {
           title={'Blood Requests'}
           onPress={() => this.props.navigation.goBack()}
         />
-        <SearchBar
+        {/* <SearchBar
           placeholder="Search by Name, District, Blood Group..."
           onChangeText={(text) => this.searchFilterFunction(text)}
           value={this.state.value}
@@ -152,7 +161,40 @@ class CheckRequest extends Component {
             animationDuration={1000}
             focused={true}
           />
-        </View>
+        </View> */}
+
+        <Tab.Navigator
+          tabBarOptions={{
+            activeTintColor: colors.primary,
+            inactiveTintColor: 'gray',
+            indicatorStyle: {
+              backgroundColor: colors.primary,
+            },
+            labelStyle: {
+              fontFamily: 'HelveticaNowDisplay-Bold',
+              fontSize: 14,
+              textTransform: 'none',
+            },
+          }}>
+          <Tab.Screen
+            name={'Individual'}
+            children={() => (
+              // <TabScreen
+
+              // />
+              <BloodRequestTab data={this.props.individualRequest} />
+            )}
+          />
+          <Tab.Screen
+            name={'All'}
+            children={() => (
+              <BloodRequestTab data={this.props.bloodRequest} />
+              // <TabScreen
+
+              // />
+            )}
+          />
+        </Tab.Navigator>
       </View>
     );
   }
@@ -160,6 +202,7 @@ class CheckRequest extends Component {
 const mapStateToProps = (state) => {
   return {
     bloodRequest: state.dataReducer.bloodRequest,
+    individualRequest: state.dataReducer.individualRequest,
   };
 };
 
@@ -183,15 +226,6 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     flexDirection: 'row',
     borderRadius: h('1%'),
-  },
-  flatlistContainer: {
-    alignItems: 'center',
-    marginTop: h('2%'),
-    elevation: 5,
-  },
-  labelText: {
-    fontFamily: 'HelveticaNowDisplay-Regular',
-    fontSize: 10,
   },
   flatlistContainerView: {
     backgroundColor: '#E6DDDD',
@@ -221,11 +255,6 @@ const styles = StyleSheet.create({
   },
   LastContainer: {
     // backgroundColor: 'yellow',
-    width: '20%',
-    alignContent: 'flex-end',
-    justifyContent: 'center',
-    alignItems: 'flex-end',
-    marginEnd: h('1.8'),
   },
   nametxt: {
     color: colors.black,

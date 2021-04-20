@@ -38,7 +38,7 @@ export class MyRequest extends Component {
   fetchUserRequestList() {
     this.props.actions.fetcheduserrequestlist({
       accessToken: this.props.access_token,
-      user_id: this.props.userData['user_id'],
+      user_id: '59',
 
       onSuccess: () => {
         // this.toggleLogin(false);
@@ -141,9 +141,9 @@ export class MyRequest extends Component {
               alignSelf: 'stretch',
             }}>
             <TouchableOpacity
-              style={{elevation: 5}}
+              style={{elevation: 5, alignItems: 'center'}}
               onPress={() => this.deleteRequest(item)}>
-              <AntDesign name="delete" color={colors.primary} size={24} />
+              <AntDesign name="closecircle" color={colors.primary} size={24} />
               <Text style={styles.labelText}>Delete</Text>
             </TouchableOpacity>
             {item.status != 'COMPLETE' ? (
@@ -151,11 +151,13 @@ export class MyRequest extends Component {
                 style={{
                   elevation: 5,
                   alignItems: 'center',
-                  alignContent: 'center',
-                  justifyContent: 'center',
                 }}
                 onPress={() => this.completeRequest(item)}>
-                <AntDesign name="check" color={colors.acceptGreen} size={24} />
+                <AntDesign
+                  name="checkcircle"
+                  color={colors.acceptGreen}
+                  size={24}
+                />
                 <Text style={styles.labelText}>Complete</Text>
               </TouchableOpacity>
             ) : null}
@@ -288,7 +290,7 @@ export class MyRequest extends Component {
 }
 const mapStateToProps = (state) => {
   return {
-    mybloodrequest: state.dataReducer.bloodRequest,
+    mybloodrequest: state.dataReducer.userRequest,
     userData: state.loginReducer.loginResponse['user'],
     access_token: state.loginReducer.loginResponse['token'],
   };
@@ -360,7 +362,7 @@ const styles = StyleSheet.create({
     color: '#ea5455',
     fontSize: h('1.8%'),
     marginLeft: h('1%'),
-    fontFamily: 'HelveticaNowDisplay-ExtraBold',
+    fontFamily: 'HelveticaNowDisplay-Regular',
   },
   no: {
     color: 'white',
@@ -469,7 +471,7 @@ const styles = StyleSheet.create({
     color: '#Ffff',
     fontSize: h('1.2%'),
 
-    fontFamily: 'HelveticaNowDisplay-Bold',
+    fontFamily: 'HelveticaNowDisplay-ExtraBold',
   },
   frespace: {
     backgroundColor: 'white',
@@ -482,5 +484,6 @@ const styles = StyleSheet.create({
     fontSize: 10,
     alignSelf: 'center',
     alignItems: 'center',
+    justifyContent: 'center',
   },
 });

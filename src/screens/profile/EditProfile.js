@@ -43,7 +43,6 @@ class EditProfile extends Component {
     showDatePicker: false,
     showLastDonatedDatePicker: false,
     dateofbirth: undefined,
-    disease: undefined,
     district: undefined,
     location: undefined,
     role: undefined,
@@ -84,7 +83,6 @@ class EditProfile extends Component {
       email: this.props.userData['email'],
       phone: this.props.userData['phone'],
       dateofbirth: this.props.userData['date_of_birth'],
-      disease: this.props.userData['disease'],
       district: this.props.userData['district'],
       last_blood_donated: this.props.userData['last_blood_donated'],
     });
@@ -124,11 +122,10 @@ class EditProfile extends Component {
                     sex: this.state.gender,
                     role_id: this.state.role,
                     blood_group: this.state.blood,
-                    disease: this.state.disease,
                     district: this.state.district,
                     location: 'location',
                     date_of_birth: this.state.dateofbirth,
-                    last_blood_donated: this.state.last_blood_donated,
+                    last_donated_blood: this.state.last_blood_donated,
                   };
                   this.toggleLogin(true);
 
@@ -268,12 +265,6 @@ class EditProfile extends Component {
                   )}
                 </View>
               </TouchableOpacity>
-
-              <AppTextinput
-                name={'Disease'}
-                onChangeText={(disease) => this.setState({disease})}
-                defaultValue={this.props.userData['disease']}
-              />
 
               <View style={{margin: 12}}>
                 <RNModalPicker
@@ -743,7 +734,7 @@ const styles = StyleSheet.create({
   topContainer: {
     // backgroundColor: 'red',
     width: '100%',
-    height: h('70%'),
+    height: h('60%'),
   },
   lottie: {
     width: 200,

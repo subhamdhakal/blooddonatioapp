@@ -3,6 +3,7 @@ import {
   BLOOD_REQUEST_FETCHED,
   EVENT_LIST_FETCHED,
   USER_MY_REQUEST_FETCHED,
+  FETCHED_INDIVIDUAL_REQUEST,
 } from '../constants/action-types';
 
 const initialState = {
@@ -10,6 +11,7 @@ const initialState = {
   bloodRequest: [''],
   eventList: [''],
   userRequest: [''],
+  individualRequest: [''],
 };
 
 function dataReducer(state = initialState, action) {
@@ -37,6 +39,12 @@ function dataReducer(state = initialState, action) {
       userRequest: action.payload,
     };
   }
+  if (action.type === FETCHED_INDIVIDUAL_REQUEST) {
+    return {
+      ...state,
+      individualRequest: action.payload,
+    };
+  }
 
   return state;
 }
@@ -58,6 +66,12 @@ export const fetchedBloodRequest = (data) => {
 export const fetchedEventList = (data) => {
   return {
     type: EVENT_LIST_FETCHED,
+    payload: data,
+  };
+};
+export const fetchedIndividualRequest = (data) => {
+  return {
+    type: FETCHED_INDIVIDUAL_REQUEST,
     payload: data,
   };
 };

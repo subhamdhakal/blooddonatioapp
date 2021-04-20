@@ -1,390 +1,227 @@
+/* eslint-disable handle-callback-err */
+/* eslint-disable react-native/no-inline-styles */
+/* eslint-disable no-sparse-arrays */
 import React, {Component} from 'react';
 import {
   StyleSheet,
   View,
+  Text,
   Image,
-  TouchableWithoutFeedback,
-  FlatList,
+  ImageBackground,
   TouchableOpacity,
-  Modal,
+  ScrollView,
+  TextInput,
+  Alert,
+  Linking,
 } from 'react-native';
-import {Portal, Text, Button, Provider, Avatar} from 'react-native-paper';
-import {bindActionCreators} from 'redux';
-import {connect} from 'react-redux';
+import {SearchBar} from 'react-native-elements';
+import AnimatedLoader from 'react-native-animated-loader';
 
-import colors from '../../assets/colors/colors';
 import {
   widthPercentageToDP as w,
   heightPercentageToDP as h,
 } from 'react-native-responsive-screen';
+import {KeyboardAwareScrollView} from '@codler/react-native-keyboard-aware-scroll-view';
+import {AppButton, NavHeader, AppTextinput} from '../../components';
+var validator = require('email-validator');
+import AsyncStorage from '@react-native-community/async-storage';
+import {AnimatedFlatList, AnimationType} from 'flatlist-intro-animations';
+import {bindActionCreators} from 'redux';
+import {connect} from 'react-redux';
+import colors from './../../assets/colors/colors';
+import AntDesign from 'react-native-vector-icons/AntDesign';
+import {Avatar, Button} from 'react-native-paper';
+import {SearchableFlatList} from 'react-native-searchable-list';
+import call from 'react-native-phone-call';
+import {requestblood} from './../../actions/bloodrequest';
 
-import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
-import CancelAppointmentModal from '../../components/CancelAppointmentModal';
-import SelectPaymentOptionModal from '../../components/SelectPaymentOptionModal';
-import {getPaymentDetail} from './../../actions/patientpayment';
-import {setStatusWaiting} from './../../actions/patient/appointment';
-function getStatusColor(status) {
-  switch (status) {
-    case 'PENDING':
-      return colors.pendingYellow;
-      break;
-    case 'COMPLETED':
-      return colors.acceptGreen;
-      break;
-    case 'MISSED':
-      return colors.rejectRed;
-      break;
-    case 'ACCEPTED':
-      return colors.acceptGreen;
-      break;
-    case 'RESCHEDULED':
-      return colors.pendingYellow;
-      break;
-    case 'CONFIRMED':
-      return colors.acceptGreen;
-      break;
-    case 'WAITING':
-      return colors.accentBlue;
-      break;
-    default:
-      return colors.rejectRed;
-
-      break;
-  }
-}
-class UpComingAppointmentTabScreen extends Component {
+class BloodRequestTab extends Component {
   state = {
-    deleteModal: false,
-    paymentModal: false,
-    appointmentId: 'kanskx',
-    paymentData: {},
+    searchTerm: '',
+    data: this.props.donorList,
   };
   constructor(props) {
     super(props);
-    this.dismissCancelModal = this.dismissCancelAppointmentModal.bind(this);
+    this.arrayholder = this.props.donorList;
   }
-  dismissCancelAppointmentModal() {
-    this.setState({
-      deleteModal: false,
-      paymentModal: false,
+  RenderItem = (item) => (
+    <View style={styles.flatlistContainer}>
+      <View style={styles.flatlistItem}>
+        <View style={styles.leftContainer}>
+          <Avatar.Text
+            size={48}
+            color={colors.white}
+            label={item.blood_group}
+            style={{backgroundColor: colors.primary}}
+            labelStyle={{
+              fontFamily: 'HelveticaNowDisplay-Regular',
+              fontSize: 24,
+            }}
+          />
+        </View>
+        <View style={styles.RightContainer}>
+          <Text style={styles.nametxt}>{item.full_name}</Text>
+          <Text style={styles.gendertxt}>{item.created_date}</Text>
+          <Text style={styles.addresstxt}>{item.address}</Text>
+          <Text style={styles.addresstxt}>{item.phone_no}</Text>
+        </View>
+        <View style={styles.LastContainer}>
+          <TouchableOpacity
+            style={{
+              elevation: 5,
+              alignItems: 'center',
+            }}
+            onPress={() => this.makePhoneCall(item.phone_no)}>
+            <AntDesign name="phone" color={colors.acceptGreen} size={26} />
+            <Text style={styles.labelText}>Call</Text>
+          </TouchableOpacity>
+          {item.latitude === '' ? null : (
+            <TouchableOpacity
+              style={{elevation: 5, alignItems: 'center'}}
+              onPress={() =>
+                this._goToYosemite({
+                  latitude: item.latitude,
+                  longitude: item.longitude,
+                })
+              }>
+              <AntDesign name="find" color={colors.primary} size={26} />
+              <Text style={styles.labelText}>Location</Text>
+            </TouchableOpacity>
+          )}
+        </View>
+      </View>
+    </View>
+  );
+  _goToYosemite({latitude, longitude}) {
+    // console.log(latitude + '' + longitude);
+    // openMap({
+    //   navigate_mode: 'navigate',
+    //   end:"",
+    //   latitude: parseFloat(latitude),
+    //   longitude: parseFloat(longitude),
+    // });
+    const scheme = Platform.select({ios: 'maps:0,0?q=', android: 'geo:0,0?q='});
+    const latLng = `${latitude},${longitude}`;
+    const label = 'Custom Label';
+    const url = Platform.select({
+      ios: `${scheme}${label}@${latLng}`,
+      android: `${scheme}${latLng}(${label})`,
     });
-  }
 
-  getPatientPaymentDetails(id) {
-    this.setState({
-      appointmentId: id,
-    });
-    this.props.actions.getPaymentDetail({
-      accessToken: this.props.accessToken,
-      appointmentId: id,
-      onSuccess: ({paymentData}) => {
-        console.log('Payment data ' + paymentData);
-        this.setState({
-          paymentModal: true,
-          paymentData: paymentData,
-        });
-      },
-      onFailure: () => {
-        //Alert error message
-      },
-    });
+    Linking.openURL(url);
   }
-  setStatusWaiting = (id) => {
-    this.props.actions.setStatusWaiting({
-      accessToken: this.props.accessToken,
-      appointmentId: id,
-      onSuccess: () => {},
-      onFailure: ({msg}) => {
-        //Alert error message
-        alert(msg);
-      },
+  makePhoneCall = (phoneNumber) => {
+    try {
+      if (phoneNumber.length != 10) {
+        alert('Invalid phone number');
+        return;
+      }
+    } catch (err) {
+      alert('Invalid phone number');
+    }
+
+    const args = {
+      number: phoneNumber,
+      prompt: true,
+    };
+    // Make a call
+    call(args).catch(console.error);
+  };
+
+  updateSearch = (search) => {
+    this.setState({search});
+  };
+  searchFilterFunction = (text) => {
+    this.setState({
+      value: text,
+    });
+
+    const newData = this.arrayholder.filter((item) => {
+      const itemData = `${item.full_name.toUpperCase()} ${item.blood_group.toUpperCase()} `;
+
+      // const itemData = `${item.name.title.toUpperCase()} ${item.name.first.toUpperCase()} ${item.name.last.toUpperCase()}`;
+      const textData = text.toUpperCase();
+
+      return itemData.indexOf(textData) > -1;
+    });
+    this.setState({
+      data: newData,
     });
   };
+
   render() {
     return (
-      <View
-        {...this.props}
-        style={{
-          paddingBottom: 12,
-          flex: 1,
-          backgroundColor: colors.white,
-        }}>
-        <Provider>
-          <Portal>
-            <CancelAppointmentModal
-              visible={this.state.deleteModal}
-              appointmentId={this.state.appointmentId}
-              dismissCancelModal={() => this.dismissCancelModal()}
-            />
-          </Portal>
-          <Portal>
-            <SelectPaymentOptionModal
-              visible={this.state.paymentModal}
-              appointmentId={this.state.appointmentId}
-              dismissCancelModal={() => this.dismissCancelModal()}
-              paymentData={this.state.paymentData}
-            />
-          </Portal>
-
-          <FlatList
-            data={this.props.data}
-            renderItem={({item, index}) => {
-              return (
-                <View style={styles.flatlistContainer}>
-                  <View style={styles.flatlistItem}>
-                    <View style={styles.leftContainer}>
-                      <Avatar.Image
-                        size={52}
-                        source={{
-                          uri:
-                            'https://images.pexels.com/photos/220453/pexels-photo-220453.jpeg?auto=compress&cs=tinysrgb&dpr=1&w=500',
-                        }}
-                      />
-                    </View>
-                    <View style={styles.RightContainer}>
-                      <Text
-                        style={{
-                          fontFamily: 'HelveticaNowDisplay-Regular',
-                          fontSize: 12,
-                          color: colors.accentBlue,
-                        }}>
-                        {'Doctor: ' + item.doctor}
-                      </Text>
-                      <Text
-                        style={{
-                          fontFamily: 'HelveticaNowDisplay-Regular',
-                          fontSize: 12,
-                          color: colors.accentBlue,
-                        }}>
-                        {'Department: ' + item.doctorDepartment}
-                      </Text>
-                      <Text
-                        style={{
-                          fontFamily: 'HelveticaNowDisplay-Regular',
-                          fontSize: 12,
-                          color: colors.accentBlue,
-                        }}>
-                        {'Appointment Date: ' + item.appointmentDate}
-                      </Text>
-                      <Text
-                        style={{
-                          fontFamily: 'HelveticaNowDisplay-Regular',
-                          fontSize: 12,
-                          color: colors.accentBlue,
-                        }}>
-                        {'Start Time: ' + item.startTime}
-                      </Text>
-                      <Text
-                        style={{
-                          fontFamily: 'HelveticaNowDisplay-Regular',
-                          fontSize: 12,
-                          color: colors.accentBlue,
-                        }}>
-                        {'Title: ' + item.subject}
-                      </Text>
-                      <View
-                        style={{
-                          flexWrap: 'wrap',
-                          alignItems: 'flex-end',
-                        }}></View>
-                    </View>
-                    <View style={styles.LastContainer}>
-                      <View
-                        style={{
-                          backgroundColor: getStatusColor(
-                            item.appointmentStatus,
-                          ),
-                          width: '75%',
-                          height: '25%',
-                          justifyContent: 'center',
-                          paddingLeft: h('1%'),
-                          // borderRadius: h('10%'),
-                          marginTop: h('3%'),
-
-                          borderTopLeftRadius: h('10%'),
-                          borderBottomLeftRadius: h('10%'),
-                        }}>
-                        <Text style={styles.requestTxt}>
-                          {item.appointmentStatus}
-                        </Text>
-                      </View>
-                      <View
-                        style={{
-                          flexDirection: 'row-reverse',
-                          alignContent: 'flex-end',
-                          margin: 12,
-                          justifyContent: 'space-between',
-                          alignItems: 'stretch',
-                          alignSelf: 'stretch',
-                        }}>
-                        {item.appointmentStatus === 'PENDING' ? (
-                          <TouchableOpacity
-                            style={{
-                              elevation: 5,
-                              alignItems: 'center',
-                              alignContent: 'center',
-                              justifyContent: 'center',
-                            }}
-                            onPress={() =>
-                              this.getPatientPaymentDetails(item.id)
-                            }>
-                            <MaterialCommunityIcons
-                              name="cash"
-                              color={colors.acceptGreen}
-                              size={24}
-                            />
-                            <Text style={styles.labelText}>Complete</Text>
-                          </TouchableOpacity>
-                        ) : null}
-                        {item.appointmentStatus != 'CONFIRMED' ? null : (
-                          <TouchableOpacity
-                            style={{elevation: 5}}
-                            onPress={() => this.setStatusWaiting(item.id)}>
-                            <MaterialCommunityIcons
-                              name="timer-sand-empty"
-                              color={colors.pendingYellow}
-                              size={24}
-                            />
-                          </TouchableOpacity>
-                        )}
-                        {item.appointmentStatus === 'COMPLETED' ||
-                        item.appointmentStatus === 'CANCELLED' ||
-                        item.appointmentStatus === 'CONFIRMED' ? null : (
-                          <TouchableOpacity
-                            style={{elevation: 5}}
-                            onPress={() =>
-                              this.setState({
-                                deleteModal: true,
-                                appointmentId: item.id,
-                              })
-                            }>
-                            <MaterialCommunityIcons
-                              name="delete-outline"
-                              color={colors.rejectRed}
-                              size={24}
-                            />
-                            <Text style={styles.labelText}>Delete</Text>
-                          </TouchableOpacity>
-                        )}
-                      </View>
-                    </View>
-                  </View>
-                </View>
-              );
+      <View {...this.props} style={styles.Container}>
+        <AnimatedLoader
+          visible={this.state.loading}
+          overlayColor="rgba(255,255,255,0.75)"
+          source={require('../../assets/loader.json')}
+          animationStyle={styles.lottie}
+          speed={1}></AnimatedLoader>
+        {/* <NavHeader
+          title={'Blood Requests'}
+          onPress={() => this.props.navigation.goBack()}
+        /> */}
+        <SearchBar
+          placeholder="Search by Name, District, Blood Group..."
+          onChangeText={(text) => this.searchFilterFunction(text)}
+          value={this.state.value}
+          clearIcon
+          inputStyle={{
+            backgroundColor: colors.white,
+            fontFamily: 'HelveticaNowDisplay-Regular',
+            fontSize: 14,
+            borderColor: colors.white,
+          }}
+          inputContainerStyle={{
+            backgroundColor: colors.white,
+            borderColor: colors.white,
+          }}
+          lightTheme
+          containerStyle={{
+            backgroundColor: colors.white,
+            borderColor: colors.white,
+            borderWidth: 0,
+          }}
+        />
+        <View style={styles.flatlistContainerView}>
+          <AnimatedFlatList
+            contentContainerStyle={{
+              marginTop: -h('1%'),
             }}
-            keyExtractor={(item, index) => index.toString()}
+            data={this.props.data}
+            renderItem={({item}) => this.RenderItem(item)}
+            animationType={AnimationType.SlideFromRight}
+            keyExtractor={(item) => item.full_name}
+            animationDuration={1000}
+            focused={true}
           />
-        </Provider>
+          <View style={styles.frespace}></View>
+        </View>
       </View>
     );
   }
 }
-
 const mapStateToProps = (state) => {
   return {
-    recommendedDoctorList: state.patientDashBoardReducer.recommendedDoctorList,
-    accessToken: state.loginReducer.accessToken,
-    patientDashboardData: state.patientDashBoardReducer.patientDashboardData,
-    profile: state.patientDashBoardReducer.profile,
-    profileData: state.patientDashBoardReducer.profile,
-
-    loading: state.patientDashBoardReducer.loading,
+    donorList: state.dataReducer.donorList,
+    access_token: state.loginReducer.loginResponse['token'],
   };
 };
 
 function mapDispatchToProps(dispatch) {
   return {
-    actions: bindActionCreators({getPaymentDetail, setStatusWaiting}, dispatch),
+    actions: bindActionCreators({requestblood}, dispatch),
   };
 }
 
-export default connect(
-  mapStateToProps,
-  mapDispatchToProps,
-)(UpComingAppointmentTabScreen);
+export default connect(mapStateToProps, mapDispatchToProps)(BloodRequestTab);
+
 const styles = StyleSheet.create({
-  main: {
-    flex: 1,
-    backgroundColor: colors.white,
-  },
-  containerStyle: {
-    backgroundColor: 'white',
-    borderRadius: 20,
-    shadowColor: '#000',
-    justifyContent: 'center',
-    alignSelf: 'center',
-    width: '80%',
-    shadowOffset: {
-      width: 0,
-      height: 2,
-    },
-    shadowOpacity: 0.25,
-    shadowRadius: 3.84,
-    elevation: 5,
-  },
   Container: {
     flex: 1,
   },
-  ImageBackground: {
-    // backgroundColor: 'red',
-    width: '100%',
-    height: h('30%'),
-    alignItems: 'center',
-  },
-  imgtxt: {
-    color: 'white',
-    fontSize: h('3%'),
-    marginTop: h('3%'),
-    fontFamily: 'HelveticaNowDisplay-Bold',
-  },
-  newRequest: {
-    backgroundColor: '#fff2',
-    width: '80%',
-    height: h('15%'),
-    flexDirection: 'row',
-    borderRadius: h('1%'),
-    marginTop: h('4%'),
-  },
-  left: {
-    // backgroundColor: 'green',
-    width: '50%',
-    height: '100%',
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
-  right: {
-    // backgroundColor: 'yellow',
-    width: '50%',
-    height: '100%',
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
-  btn: {
-    backgroundColor: 'white',
-    width: '95%',
-    height: h('5%'),
-    borderRadius: h('10%'),
-    justifyContent: 'center',
-    alignItems: 'center',
-    flexDirection: 'row',
-    elevation: h('2%'),
-  },
-  btntxt: {
-    color: '#ea5455',
-    fontSize: h('1.8%'),
-    marginLeft: h('1%'),
-    fontFamily: 'HelveticaNowDisplay-ExtraBold',
-  },
-  no: {
-    color: 'white',
-    fontSize: h('4%'),
-    fontFamily: 'HelveticaNowDisplay-Bold',
-  },
-  Requst: {
-    color: 'white',
-    fontSize: h('2%'),
-    fontFamily: 'HelveticaNowDisplay-Medium',
-  },
+
   flatlistItem: {
     backgroundColor: '#fff',
     width: '90%',
@@ -392,19 +229,20 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     flexDirection: 'row',
     borderRadius: h('1%'),
-    elevation: 5,
   },
   flatlistContainer: {
     alignItems: 'center',
     marginTop: h('2%'),
-    flex: 1,
-    marginBottom: 8,
+    elevation: 5,
+  },
+  labelText: {
+    fontFamily: 'HelveticaNowDisplay-Regular',
+    fontSize: 10,
   },
   flatlistContainerView: {
     backgroundColor: '#E6DDDD',
-    height: '100%',
+    height: '90%',
     flex: 1,
-    paddingTop: h('2%'),
   },
   leftContainer: {
     // backgroundColor: '#000',
@@ -417,7 +255,9 @@ const styles = StyleSheet.create({
     // backgroundColor: 'red',
     width: '50%',
     height: '100%',
+    padding: h('2%'),
     justifyContent: 'center',
+    alignContent: 'center',
   },
   imgcontainer: {
     backgroundColor: '#ea5455',
@@ -426,78 +266,83 @@ const styles = StyleSheet.create({
     height: '70%',
   },
   LastContainer: {
-    width: '30%',
-    alignItems: 'flex-end',
+    // backgroundColor: 'yellow',
+    width: '20%',
+    justifyContent: 'space-between',
+    alignContent: 'center',
+    alignItems: 'center',
+    flexDirection: 'row',
   },
   nametxt: {
-    color: 'black',
-    fontSize: h('2%'),
-    marginTop: h('3%'),
-    fontFamily: 'HelveticaNowDisplay-Medium',
+    color: colors.black,
+    fontSize: h('1.6%'),
+    marginTop: h('0.5%'),
+    fontFamily: 'HelveticaNowDisplay-Bold',
+  },
+  gendertxt: {
+    color: colors.primary,
+    fontSize: h('1.8%'),
+    // marginTop: h('1%'),
+    fontFamily: 'HelveticaNowDisplay-Bold',
   },
   addresstxt: {
-    color: 'silver',
-    fontSize: h('2%'),
+    color: 'gray',
+    fontSize: h('1.8%'),
     // marginTop: h('1%'),
-    fontFamily: 'HelveticaNowDisplay-Medium',
+    fontFamily: 'HelveticaNowDisplay-Regular',
+  },
+  notxt: {
+    color: colors.primary,
+    fontSize: h('1.2%'),
+    fontFamily: 'HelveticaNowDisplay-Bold',
   },
   noConatiner: {
-    // backgroundColor: 'red',
+    backgroundColor: colors.white,
     width: '80%',
     height: '25%',
     justifyContent: 'center',
     alignItems: 'center',
-    borderRadius: h('10%'),
-    marginTop: h('3%'),
+    borderRadius: h('1%'),
+    marginTop: h('2%'),
     borderColor: '#ea5455',
-    borderWidth: 1,
+    elevation: 5,
   },
   requestContainr: {
     backgroundColor: '#FF215D',
-    width: '75%',
+    width: '80%',
     height: '25%',
     justifyContent: 'center',
-    paddingLeft: h('1%'),
+    paddingLeft: h('2%'),
     // borderRadius: h('10%'),
     marginTop: h('3%'),
-
     borderTopLeftRadius: h('10%'),
     borderBottomLeftRadius: h('10%'),
   },
   circlebLood: {
-    width: '30%',
-    height: '30%',
+    width: '55%',
+    height: '40%',
     borderRadius: h('10%'),
     // backgroundColor: 'red',
-    marginTop: h('2%'),
     marginRight: h('3%'),
     borderColor: 'silver',
-    borderWidth: 1,
+    borderWidth: 2,
     justifyContent: 'center',
     alignItems: 'center',
+    flexDirection: 'row-reverse',
   },
   circelTxt: {
     color: '#FF215D',
-    fontSize: h('1.5%'),
-    fontFamily: 'HelveticaNowDisplay-Medium',
+    fontSize: h('3%'),
+    fontFamily: 'HelveticaNowDisplay-Regular',
   },
   requestTxt: {
     color: '#Ffff',
-    fontSize: h('1.1%'),
-    alignSelf: 'flex-end',
-    fontFamily: 'HelveticaNowDisplay-ExtraBold',
-    paddingRight: 4,
+    fontSize: h('2%'),
   },
   frespace: {
-    backgroundColor: 'white',
+    // backgroundColor: 'white',
     width: '100%',
-    height: h('35.1%'),
+    height: h('3%'),
     // marginTop: -h('50%'),
-  },
-  labelText: {
-    fontFamily: 'HelveticaNowDisplay-Regular',
-    fontSize: 10,
-    alignSelf: 'center',
-    alignItems: 'center',
   },
 });

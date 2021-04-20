@@ -86,8 +86,7 @@ class SendPersonalRequest extends Component {
           accessToken: this.props.access_token,
           value: value,
 
-          onSuccess: (bloodrequestid) => {
-            PushNotification.subscribeToTopic(bloodrequestid);
+          onSuccess: () => {
             this.props.navigation.replace('BottomTab');
             alert('Blood request posted successfully!');
             this.toggleLogin(false);

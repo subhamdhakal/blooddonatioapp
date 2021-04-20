@@ -8,11 +8,14 @@ import {
   Text,
   ImageBackground,
   TouchableOpacity,
+  Alert,
 } from 'react-native';
 import {
   widthPercentageToDP as w,
   heightPercentageToDP as h,
 } from 'react-native-responsive-screen';
+import * as RootNavigation from './../../services/NavigationService';
+
 import {ProfilePic} from '../../components';
 import {SliderBox} from 'react-native-image-slider-box';
 import {bindActionCreators} from 'redux';
@@ -34,11 +37,20 @@ export function setupPushNotification(handleNotification) {
     onNotification: function (notification) {
       console.log('NOTIFICATION:', notification);
       if (notification.foreground === true) {
-        alert(JSON.stringify(notification));
+        Alert.alert(notification.title, notification.body, [
+          {
+            text: 'Cancel',
+            onPress: () => console.log('Cancel Pressed'),
+            style: 'cancel',
+          },
+          {
+            text: 'View',
+            onPress: () => RootNavigation.navigate(notification.data.route),
+          },
+        ]);
       } else {
-        // handleNotification(notification);
+        handleNotification(notification);
         // alert(JSON.stringify(notification));
-        alert('background');
       }
       // onAction replacement here
 
@@ -75,13 +87,17 @@ class Dashboard extends Component {
     this.pushNotification = setupPushNotification(this._handleNotificationOpen);
 
     console.log(
-      'blood_group_notification' + this.props.blood_group_notification,
+      'blood_group_notification' + JSON.stringify(this.props.userData),
     );
     PushNotification.subscribeToTopic('events');
     PushNotification.subscribeToTopic(this.props.blood_group_notification);
+    PushNotification.subscribeToTopic(
+      JSON.stringify(this.props.userData['id']),
+    );
 
     this.props.actions.fetchdonorlistandbloodrequest({
       accessToken: this.props.access_token,
+      userId: this.props.userData['id'],
 
       onSuccess: () => {
         // this.toggleLogin(false);
@@ -97,10 +113,10 @@ class Dashboard extends Component {
     });
   }
 
-  _handleNotificationOpen = () => {
+  _handleNotificationOpen = (notification) => {
     const {navigate} = this.props.navigation;
-    console.log('called');
-    navigate('ProfileScreen');
+    console.log('handke' + JSON.stringify(notification.data.route));
+    navigate(notification.data.route);
   };
   render() {
     return (
@@ -170,6 +186,8 @@ const mapStateToProps = (state) => {
     sliderImages: state.loginReducer.loginResponse['event_images'],
     access_token: state.loginReducer.loginResponse['token'],
     total_count: state.loginReducer.loginResponse['total_count'],
+    userData: state.loginReducer.loginResponse['user'],
+
     blood_group_notification:
       state.loginReducer.loginResponse['blood_group_notification'],
   };

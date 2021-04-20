@@ -23,8 +23,8 @@ import {AsyncStorage} from '@react-native-community/async-storage';
 
 class Signin extends Component {
   state = {
-    email: 'test2017@gmail.com',
-    password: 'webapp123',
+    email: '',
+    password: '',
     loading: false,
   };
 
@@ -42,7 +42,7 @@ class Signin extends Component {
       if (password !== '') {
         this.toggleLogin(true);
         this.props.actions.login({
-          email: this.state.email,
+          email: this.state.email.trim(),
           password: this.state.password,
           onSuccess: () => {
             this.props.navigation.replace('BottomTab');
