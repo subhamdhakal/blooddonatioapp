@@ -83,7 +83,7 @@ class Signin extends Component {
           <View style={styles.bgContainer}>
             <Image
               style={styles.hand}
-              source={require('../../assets/hand.png')}
+              source={require('../../assets/bloodbooklogo.png')}
             />
             <AppTextinput
               name={'Email'}

@@ -85,7 +85,7 @@ export const fetcheduserrequestlist = ({
   console.log('individual response' + user_id);
   return (dispatch) => {
     return axios
-      .get(BASE_URL + 'api/v1/blood-request-list?data="59"', {
+      .get(BASE_URL + 'api/v1/blood-request-list?data=' + user_id, {
         headers: {
           Authorization: `Bearer ${accessToken}`,
         },

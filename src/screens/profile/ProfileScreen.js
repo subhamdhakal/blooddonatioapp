@@ -30,7 +30,7 @@ export class ProfileScreen extends Component {
   componentDidMount() {
     this.props.actions.fetcheduserrequestlist({
       accessToken: this.props.access_token,
-      user_id: this.props.userData['user_id'],
+      user_id: this.props.userData['id'],
 
       onSuccess: () => {
         // this.toggleLogin(false);

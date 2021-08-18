@@ -9,6 +9,7 @@ import {
   ImageBackground,
   TouchableOpacity,
   Alert,
+  Image,
 } from 'react-native';
 import {
   widthPercentageToDP as w,
@@ -177,6 +178,10 @@ class Dashboard extends Component {
           </View>
         </View>
         {/* bottom view */}
+        <Image
+          source={require('../../assets/uyclogo.png')}
+          style={{width: 92, height: 92, alignSelf: 'center', marginTop: 8}}
+        />
       </ImageBackground>
     );
   }

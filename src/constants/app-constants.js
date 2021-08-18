@@ -1,4 +1,4 @@
-export const BASE_URL = 'http://bloodbook.webdemosite.ml/';
+export const BASE_URL = 'http://webdemotest.ml/';
 export const LOGIN_BASE_URL = 'https://login.easyhealthcareclinic.com/';
 
 export const DISTRICT_LIST = [

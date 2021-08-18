@@ -33,12 +33,13 @@ import {color} from 'react-native-reanimated';
 export class MyRequest extends Component {
   componentDidMount() {
     this.fetchUserRequestList();
+    console.log('user data ' + JSON.stringify(this.props.userData.id));
   }
 
   fetchUserRequestList() {
     this.props.actions.fetcheduserrequestlist({
       accessToken: this.props.access_token,
-      user_id: '59',
+      user_id: this.props.userData.id,
 
       onSuccess: () => {
         // this.toggleLogin(false);

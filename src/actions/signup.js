@@ -19,7 +19,7 @@ export const signup = ({signUpDetails, onSuccess, onFailure}) => {
       })
       .catch((error) => {
         console.log(JSON.stringify(error));
-        onFailure(error.response.data.error);
+        onFailure(JSON.stringify(error.response.data.error));
       });
   };
 };
